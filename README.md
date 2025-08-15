@@ -55,6 +55,7 @@ minikube addons enable registry
 minikube addons enable metrics-server
 ```
 
+### Contextos
 
 ```sh
 kubectl config get-contexts
@@ -62,4 +63,21 @@ kubectl config get-contexts
 
 ```sh
 kubectl config use-context minikube
+```
+
+
+### Minikube
+
+```sh
+kubectl run hello-cloud --image=nginx
+```
+
+```sh
+minikube dashboard
+```
+
+```sh
+minikube start
+
+minikube stop
 ```
