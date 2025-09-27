@@ -81,3 +81,38 @@ minikube start
 
 minikube stop
 ```
+
+
+
+# Clase 3
+
+
+
+Kubernetes se compone principalmente de servidores y nodos con:
+
+- Nodos Master: se recomienda tener mas de un nodo maestro para tener alta disponibilidad.
+
+- Nodos Worker: son los encargados de ejecutar las aplicaciones y servicios en contenedores.
+
+![cluster_k8s](image.png)
+
+En desarrollo trabajaremos con un solo nodo en local con Minikube.
+
+### Nodos maestros
+
+![alt text](image-1.png)
+
+El api server es el punto de entrada de todas las peticiones al cluster.
+
+permitiendo que nuestro cluster orqueste recursos y servicios.
+
+
+
+### Nodos Worker
+
+![alt text](image-2.png)
+
+En estos nodos worker es donde encontraras todos los pods de tus aplicaciones.
+
+
+
