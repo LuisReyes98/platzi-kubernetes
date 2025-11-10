@@ -412,7 +412,8 @@ kubectl describe node ${NOMBRE_DEL_NODO}
 
 Estos comandos ofrecen información valiosa sobre el rol, estado y recursos del nodo.
 
-¿Cómo se aplican configuraciones operadores declarativas e imperativas?
+## ¿Cómo se aplican configuraciones operadores declarativas e imperativas?
+
 Kubernetes permite dos estilos para gestionar configuraciones:
 
 Declarativa: utiliza archivos YAML para definir el estado deseado del sistema.
@@ -422,14 +423,29 @@ Para aplicar un pod usando un archivo YAML de manera imperativa, utilizamos:
 ```sh
 kubectl apply -f simple-pod.yaml
 ```
+
 Y para borrar ese pod si ya no es necesario:
 
 ```sh
 kubectl delete pod
 ```
 
+```sh
+kubectl describe pods ${NOMBRE_DEL_POD}
+```
+
+```sh
+kubectl delete pod lonely-pod
+```
+
+
 ## ¿Cómo mantener nuestro clúster a punto con MiniKube?
 Para personalizar nuestro clúster y expandir sus funcionalidades, MiniKube ofrece varios add-ons. Algunos esenciales para mejorar la gestión son:
+
+```sh
+minikube addons list
+```
+
 
 - Metric Server: para obtener métricas del clúster y posibilidades de autoescalamiento.
 
