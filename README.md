@@ -308,8 +308,140 @@ Este proceso completo permite que Kubernetes actúe como un verdadero director d
 
 La arquitectura de Kubernetes representa una solución elegante para los desafíos de la computación moderna, permitiendo despliegues resilientes y escalables sin importar la complejidad de la aplicación. ¿Has implementado Kubernetes en tu organización? ¿Qué otros aspectos de su arquitectura te gustaría explorar? Comparte tu experiencia en los comentarios.
 
-# Clase 4
+# Clase 4 Introducción a la API de Kubernetes y Kubectl
 
 ## ¿Cómo configurar y empezar a trabajar con Kubernetes usando MiniKube?
-
 Conocer cómo configurar y gestionar Kubernetes eficientemente es fundamental para cualquier profesional en el área de DevOps o administración de sistemas. Con un clúster configurado con MiniKube, podemos comenzar a explorar las capacidades de Kubernetes. A continuación, te ofrecemos una guía paso a paso basada en prácticas recomendadas para que puedas aprovechar al máximo las herramientas a tu disposición.
+
+## ¿Cuál es el primer paso para iniciar con MiniKube y Kubernetes?
+Primero, se debe tener el clúster local configurado con MiniKube. Este es una herramienta esencial que te permite gestionar tu clúster localmente, ofreciendo una plataforma flexible para diferentes configuraciones, como trabajar con múltiples nodos o diferentes versiones de Kubernetes. Para iniciar el clúster, usamos el comando:
+
+```sh
+minikube start --driver=docker
+```
+
+Este comando, además de levantar el clúster, puede ser complementado con varios parámetros específicos según tus necesidades, como el driver que prefieras usar.
+
+Para ver los distintos perfiles de MiniKube que tienes configurados, puedes ejecutar:
+
+```sh
+minikube profile list
+```
+
+Los perfiles te permiten trabajar en diversas versiones de k8s o docker dependiendo de tus requerimientos.
+
+
+## ¿Qué es KubeCTL y cómo interactuamos con Kubernetes?
+
+```sh
+kubectl get --help
+```
+
+KubeCTL es el puente esencial hacia el API server de tu clúster de Kubernetes. A través de este, podemos efectuar una variedad de solicitudes como crear, leer, actualizar y eliminar (CRUD) recursos. Un ejemplo básico para consultar los recursos es el comando:
+
+```sh
+kubectl get pods
+```
+
+Con este, podemos listar los pods activos en nuestro namespace actual. Sin embargo, para obtener más detalles, podemos usar:
+
+```sh
+kubectl get pods -o wide
+```
+
+Para buscar los pods a lo largo de todos los namespaces, utilizamos:
+
+```sh
+kubectl get pods -A
+```
+
+y verlos con detalles:
+
+```sh
+kubectl get pods -o wide -A
+```
+
+## ¿Qué son los namespaces y cómo gestionarlos?
+Los namespaces son cruciales para organizar y separar lógicamente los recursos dentro de Kubernetes. Por defecto, el clúster tiene un namespace de "default", pero puedes crear y eliminar adicionales según sea necesario:
+
+- Crear un nuevo namespace:
+
+```sh
+kubectl create namespace k8s-demo
+```
+
+```sh
+kubectl create ns k8s-demo
+```
+
+- Validar la creación del namespace:
+
+```sh
+kubectl get namespaces
+```
+
+```sh
+kubectl get ns
+```
+
+- Eliminar un namespace:
+
+```sh
+kubectl delete namespace k8s-demo
+```
+
+```sh
+kubectl delete ns k8s-demo
+```
+
+
+## ¿Cómo gestionamos nodos dentro de Kubernetes?
+Un aspecto importante de Kubernetes es la gestión de nodos que conforman el clúster, donde ejecutamos operaciones con:
+
+- Listar nodos:
+
+```sh
+kubectl get nodes
+```
+
+- Describir un nodo:
+
+```sh
+kubectl describe node ${NOMBRE_DEL_NODO}
+```
+
+Estos comandos ofrecen información valiosa sobre el rol, estado y recursos del nodo.
+
+¿Cómo se aplican configuraciones operadores declarativas e imperativas?
+Kubernetes permite dos estilos para gestionar configuraciones:
+
+Declarativa: utiliza archivos YAML para definir el estado deseado del sistema.
+Imperativa: ejecuta comandos directamente para llevar a cabo una acción específica.
+Para aplicar un pod usando un archivo YAML de manera imperativa, utilizamos:
+
+```sh
+kubectl apply -f simple-pod.yaml
+```
+Y para borrar ese pod si ya no es necesario:
+
+```sh
+kubectl delete pod
+```
+
+## ¿Cómo mantener nuestro clúster a punto con MiniKube?
+Para personalizar nuestro clúster y expandir sus funcionalidades, MiniKube ofrece varios add-ons. Algunos esenciales para mejorar la gestión son:
+
+- Metric Server: para obtener métricas del clúster y posibilidades de autoescalamiento.
+
+```sh
+minikube addons enable metrics-server
+```
+- Registry: vincula el registro de Docker con MiniKube.
+
+```sh
+minikube addons enable registry
+```
+
+Estos componentes son críticos para un manejo eficiente y un desarrollo fluido dentro de Kubernetes.
+
+Ahora que hemos explorado las bases para interactuar y gestionar Kubernetes con MiniKube y KubeCTL, es momento de aprender a desplegar aplicaciones complejas. ¡Sigue explorando y aprende más sobre el despliegue de aplicaciones frontend y backend con Kubernetes!
