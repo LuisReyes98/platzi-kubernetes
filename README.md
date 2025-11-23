@@ -87,12 +87,28 @@ minikube addons enable metrics-server
 
 ### Contextos
 
+Cuales son mis contextos disponibles?
+
 ```sh
 kubectl config get-contexts
 ```
 
+Cambiar de contexto a minikube
+
 ```sh
 kubectl config use-context minikube
+```
+
+Cual es mi contexto actual?
+
+```sh
+kubectl config current-context
+```
+
+Cuales son los clusters disponibles?
+
+```sh
+kubectl config get-clusters
 ```
 
 
@@ -461,3 +477,67 @@ minikube addons enable registry
 Estos componentes son críticos para un manejo eficiente y un desarrollo fluido dentro de Kubernetes.
 
 Ahora que hemos explorado las bases para interactuar y gestionar Kubernetes con MiniKube y KubeCTL, es momento de aprender a desplegar aplicaciones complejas. ¡Sigue explorando y aprende más sobre el despliegue de aplicaciones frontend y backend con Kubernetes!
+
+# Clase 5 Diferencias entre enfoques declarativos e imperativos
+
+05-declarative-vs-imperative
+
+## Imperative
+
+## Create a pod imperatively
+```bash
+kubectl run mypod --image=nginx
+```
+
+## Get a pod imperatively
+```bash
+kubectl get pods
+```
+
+## Delete a pod imperatively
+```bash
+kubectl delete pod mypod
+```
+
+# Declarative
+
+## Create a pod declaratively
+
+```bash
+kubectl apply -f mypod.yaml
+```
+
+`-f` flag is for file
+
+
+## Delete a pod declaratively
+```bash
+kubectl delete -f mypod.yaml
+```
+
+
+## Liveness probe:
+
+indica si el contenedor está vivo. Si falla, el contenedor se reinicia.
+
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+# Clase 6 Pods, ReplicaSets y Deployments
+
+```sh
+kubectl get namespaces
+```
+
+
+Crear namespace
+
+```sh
+kubectl create ns pod-test
+```
+
+
+Crear un pod dentro del namespace pod-test
+```sh
+kubectl create pod -n pod-test
+```
+

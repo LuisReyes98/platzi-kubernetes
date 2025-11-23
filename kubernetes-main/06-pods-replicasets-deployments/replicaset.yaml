@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: ReplicaSet
-metadata:
+metadata: # la metadata y los labels son informacion critica que debe ser diferente en cada aplicacion
   name: nginx-replicaset
   labels:
     app: nginx
 spec:
   replicas: 3
-  selector:
+  selector: # importante para que el replicaSet sepa que pods gestionar
     matchLabels:
       app: nginx
   template:
@@ -15,7 +15,7 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

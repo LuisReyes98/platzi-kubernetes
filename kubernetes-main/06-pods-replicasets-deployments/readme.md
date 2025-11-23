@@ -12,19 +12,27 @@ Un Pod es la unidad más pequeña y básica de Kubernetes. Representa una instan
 
 **Crear un pod de nginx**
 
-```
+```sh
 kubectl run nginx-nodeport --image=nginx --restart=Never --port=80
+```
+
+```sh
+kubectl describe pods nginx-nodeport
+```
+
+```sh
+kubectl get svc
 ```
 
 **Ver pods existentes**
 
-```
+```sh
 kubectl get pods
 ```
 
 **Exponer un servicio con port-forward**
 
-```
+```sh
 kubectl port-forward pod/nginx-nodeport 8080:80
 ```
 
@@ -47,27 +55,29 @@ En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (co
 
 **Crear un ReplicaSet**
 
-```
+```sh
 kubectl apply -f replicaset.yaml
 ```
 
 **Ver pods existentes**
 
-```
+```sh
 kubectl get pods
 ```
 
 **Ver ReplicaSet existentes**
 
-```
+```sh
 kubectl get replicaset
 ```
 
 **Eliminar un Pod**
 
-```
+```sh
 kubectl delete pod nginx-replicaset-<pod-id>
 ```
+Al eliminar un Pod, el ReplicaSet automáticamente crea un nuevo Pod para mantener el número deseado de réplicas (pods).
+
 
 ## Deployments: Gestión declarativa de aplicaciones.
 
@@ -78,19 +88,19 @@ Un Deployment es una capa superior que gestiona ReplicaSets y proporciona una fo
 
 **Crear un Deployment**
 
-```
+```sh
 kubectl apply -f deployment.yaml
 ```
 
 **Ver pods existentes**
 
-```
+```sh
 kubectl get pods
 ```
 
 **Ver Deployment existentes**
 
-```
+```sh
 kubectl get deployment
 ```
 
@@ -102,25 +112,25 @@ kubectl delete pod hello-deployment-<pod-id>
 
 **Actualizar la imagen del Deployment**
 
-```
+```sh
 kubectl set image deployment/hello-deployment hello-app=gcr.io/google-samples/hello-app:2.0
 ```
 
 **Verificar el progreso de la actualización**
 
-```
+```sh
 kubectl rollout status deployment/hello-deployment
 ```
 
 **Verificar los Pods actualizados**
 
-```
+```sh
 kubectl get pods
 ```
 
 **Revertir la última actualización**
 
-```
+```sh
 kubectl rollout undo deployment/hello-deployment
 ```
 
@@ -132,7 +142,7 @@ kubectl get pods
 
 **Exponer un Deployment**
 
-```
+```sh
 kubectl port-forward deploy/hello-deployment 8080:8080
 ```
 
