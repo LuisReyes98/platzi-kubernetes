@@ -1,4 +1,4 @@
-Clase 6: Pods, ReplicaSets y Deployments
+# Clase 6: Pods, ReplicaSets y Deployments
 
 ## Que es un pod?
 
@@ -44,12 +44,21 @@ En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (co
 - No guardan datos persistentes entre reinicios.
 - Ejemplo: Servidores web como Nginx o aplicaciones que procesan solicitudes HTTP.
 - Escalabilidad sencilla: Puedes agregar o eliminar réplicas sin preocuparte por la consistencia de datos.
+
 #### Stateful (con estado):
 - Guardan datos persistentes y necesitan mantener el estado entre reinicios.
 - Ejemplo: Bases de datos como MySQL o Redis.
 - Requieren volúmenes persistentes (Persistent Volumes) para almacenar datos.
 
 ## ReplicaSets: Garantizar la disponibilidad de Pods.
+
+Cada replicaset debe tener su metadata de nombre unico
+
+```yaml
+name: nginx-replicaset
+```
+
+Para evitar conflictos con otros replicaset en el mismo namespace.
 
 ### Forma declarativa
 
@@ -136,7 +145,7 @@ kubectl rollout undo deployment/hello-deployment
 
 **Verificar los Pods actualizados**
 
-```
+```sh
 kubectl get pods
 ```
 

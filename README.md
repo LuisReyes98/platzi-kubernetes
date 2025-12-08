@@ -541,3 +541,240 @@ Crear un pod dentro del namespace pod-test
 kubectl create pod -n pod-test
 ```
 
+
+## Que es un pod?
+
+Un Pod es la unidad más pequeña y básica de Kubernetes. Representa una instancia de una aplicación en ejecución en el clúster. Un Pod puede contener uno o más contenedores que comparten:
+
+- Red: Todos los contenedores dentro de un Pod comparten la misma dirección IP y puerto.
+- Almacenamiento: Los contenedores pueden compartir volúmenes montados.
+- Ciclo de vida: Los contenedores dentro de un Pod se crean, ejecutan y eliminan juntos.
+
+### Forma imperativa (CLI)
+
+**Crear un pod de nginx**
+
+```sh
+kubectl run nginx-nodeport --image=nginx --restart=Never --port=80
+```
+
+```sh
+kubectl describe pods nginx-nodeport
+```
+
+```sh
+kubectl get svc
+```
+
+**Ver pods existentes**
+
+```sh
+kubectl get pods
+```
+
+**Exponer un servicio con port-forward**
+
+```sh
+kubectl port-forward pod/nginx-nodeport 8080:80
+```
+
+# Que significa Stateless vs statefull: tener o no tener estado, ahí está el dilema.
+
+En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (con estado). Esto afecta cómo se diseñan y gestionan los Pods.
+
+#### Stateless (sin estado):
+- No guardan datos persistentes entre reinicios.
+- Ejemplo: Servidores web como Nginx o aplicaciones que procesan solicitudes HTTP.
+- Escalabilidad sencilla: Puedes agregar o eliminar réplicas sin preocuparte por la consistencia de datos.
+
+#### Stateful (con estado):
+- Guardan datos persistentes y necesitan mantener el estado entre reinicios.
+- Ejemplo: Bases de datos como MySQL o Redis.
+- Requieren volúmenes persistentes (Persistent Volumes) para almacenar datos.
+
+## ReplicaSets: Garantizar la disponibilidad de Pods.
+
+Los replicasets en kubernetes son responsables de mantener un número estable de réplicas de pods en ejecución en todo momento. Si un pod falla o se elimina, el replicaset automáticamente crea un nuevo pod para reemplazarlo, asegurando así la disponibilidad continua de la aplicación.
+
+### Forma declarativa
+
+**Crear un ReplicaSet**
+
+```sh
+kubectl apply -f replicaset.yaml
+```
+
+**Ver pods existentes**
+
+```sh
+kubectl get pods
+```
+
+**Ver ReplicaSet existentes**
+
+```sh
+kubectl get replicaset
+```
+
+**Eliminar un Pod**
+
+```sh
+kubectl delete pod nginx-replicaset-<pod-id>
+```
+Al eliminar un Pod, el ReplicaSet automáticamente crea un nuevo Pod para mantener el número deseado de réplicas (pods).
+
+
+Eliminar replicaset
+
+```sh
+kubectl delete -f replicaset.yaml
+```
+
+## Deployments: Gestión declarativa de aplicaciones.
+
+Un Deployment es una capa superior que gestiona ReplicaSets y proporciona una forma declarativa de implementar aplicaciones. Es la forma más común de gestionar aplicaciones en Kubernetes.
+
+
+### Forma declarativa
+
+**Crear un Deployment**
+
+```sh
+kubectl apply -f deployment.yaml
+```
+
+**Ver pods existentes**
+
+```sh
+kubectl get pods
+```
+
+**Ver Deployment existentes**
+
+```sh
+kubectl get deployment
+```
+
+Ver replicaset que creo el deployment
+
+```sh
+kubectl get replicaset
+```
+
+El beneficio de usar deployments es que nos facilita gestionar nuevas versiones de nuestra aplicacion. Y actualizar sin degradacion del servicio.
+
+El deployment es el objeto mayor que orquesta a un replicaset.
+
+**Describe el replicaset de un deployment**
+
+```sh
+kubectl describe replicaset <replicaset-name>
+```
+
+Y mostrara la informacion del deployment que lo controla
+
+```txt
+Name:           hello-deployment-584f88f49b
+Namespace:      default
+Selector:       app=hello,pod-template-hash=584f88f49b
+Labels:         app=hello
+                pod-template-hash=584f88f49b
+Annotations:    deployment.kubernetes.io/desired-replicas: 4
+                deployment.kubernetes.io/max-replicas: 5
+                deployment.kubernetes.io/revision: 1
+Controlled By:  Deployment/hello-deployment
+Replicas:       4 current / 4 desired
+Pods Status:    4 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=hello
+           pod-template-hash=584f88f49b
+  Containers:
+   hello-app:
+    Image:         gcr.io/google-samples/hello-app:1.0
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  15m   replicaset-controller  Created pod: hello-deployment-584f88f49b-t9tkd
+  Normal  SuccessfulCreate  15m   replicaset-controller  Created pod: hello-deployment-584f88f49b-swhzn
+  Normal  SuccessfulCreate  15m   replicaset-controller  Created pod: hello-deployment-584f88f49b-7gm8l
+  Normal  SuccessfulCreate  15m   replicaset-controller  Created pod: hello-deployment-584f88f49b-br6zw
+```
+
+**Eliminar un Pod**
+
+```sh
+kubectl delete pod hello-deployment-<pod-id>
+```
+
+**Actualizar la imagen del Deployment**
+
+```sh
+kubectl set image deployment/hello-deployment hello-app=gcr.io/google-samples/hello-app:2.0
+```
+
+**Verificar el progreso de la actualización**
+
+```sh
+kubectl rollout status deployment/hello-deployment
+```
+
+**Verificar los Pods actualizados**
+
+```sh
+kubectl get pods
+```
+
+Si haces que falle a prosposito la actualizacion
+
+```sh
+kubectl set image deployment/hello-deployment hello-app=gcr.io/google-samples/hello-app:3.0
+```
+
+
+**Verificar los Pods actualizados**
+Donde podemos ver un error de imagen
+
+```sh
+kubectl get pods
+```
+
+```
+NAME                                READY   STATUS              RESTARTS   AGE
+hello-deployment-584f88f49b-br6zw   1/1     Running             0          24m
+hello-deployment-584f88f49b-swhzn   1/1     Running             0          24m
+hello-deployment-584f88f49b-t9tkd   1/1     Running             0          24m
+hello-deployment-657cbcfdfd-dgh7p   0/1     ContainerCreating   0          5s
+hello-deployment-657cbcfdfd-tgwrn   0/1     ErrImagePull        0          5s
+```
+
+**Y en el estaus del rollout** podemos ver que hay un error
+
+```sh
+kubectl rollout status deployment/hello-deployment
+```
+```text
+Waiting for deployment "hello-deployment" rollout to finish: 2 out of 4 new replicas have been updated...
+```
+
+**Revertir la última actualización**
+
+```sh
+kubectl rollout undo deployment/hello-deployment
+```
+
+
+**Exponer un Deployment**
+
+```sh
+kubectl port-forward deploy/hello-deployment 8080:8080
+```
+
+
+# Clase 7 Servicios e Ingress: Exposición de aplicaciones
