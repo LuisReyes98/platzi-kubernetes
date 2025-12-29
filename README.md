@@ -778,3 +778,109 @@ kubectl port-forward deploy/hello-deployment 8080:8080
 
 
 # Clase 7 Servicios e Ingress: Exposición de aplicaciones
+
+La capacidad de exponer aplicaciones al mundo exterior es fundamental en los entornos de Kubernetes. Entre las diversas opciones disponibles, el Ingress destaca por ofrecer una capa adicional de personalización que va más allá de los servicios tradicionales. Comprender las diferencias entre estos mecanismos de exposición permite a los desarrolladores y administradores de sistemas elegir la solución más adecuada para cada escenario.
+
+## ¿Qué opciones tenemos para exponer servicios en Kubernetes?
+
+Antes de profundizar en el Ingress, es importante revisar los diferentes tipos de servicios que Kubernetes ofrece para exponer aplicaciones:
+
+**NodePort**: Expone un puerto específico en cada uno de los nodos del clúster de Kubernetes. Esto permite aceptar tráfico desde Internet o desde el interior del clúster hacia un grupo de pods, simplemente especificando la dirección IP y el puerto configurado.
+
+**ClusterIP**: Asigna a cada servicio una IP dentro del rango del cluster CIDR. Este tipo facilita la comunicación entre diferentes pods del mismo namespace, de diferentes namespaces o incluso de diferentes hosts, lo cual es esencial para aplicaciones expuestas al mundo real o microservicios que necesitan comunicarse internamente.
+
+**LoadBalancer**: Cuando trabajamos con un clúster de Kubernetes en AWS, este tipo de servicio es gestionado automáticamente por la capa de red de AWS.
+
+**ExternalName**: Similar a los registros CNAME en DNS, actúa como un wrapper de una dirección bien construida (como una dirección de base de datos en AWS). Estos servicios permiten agregar capacidades de caché y resolución de nombres que optimizan el tráfico desde el interior del clúster hacia servicios externos.
+
+## ¿Qué es el Ingress y cómo se diferencia de los otros servicios?
+
+El Ingress va más allá de los servicios mencionados anteriormente y proporciona capacidades avanzadas para exponer aplicaciones:
+
+- Permite realizar balanceo de carga
+- Ofrece validación de terminación SSL
+- Facilita la gestión de hosting virtual mediante paths y subpaths en los hosts registrados
+
+Un caso de uso típico sería un cliente que desea acceder a una aplicación llamada "myapp.com". Con Ingress, podemos configurar diferentes rutas:
+
+- `api.myapp.com/login` que dirige al usuario a servicios de backend
+
+- `myapp.com/dashboard` que conduce a servicios frontend con interfaces de usuario
+
+Esta separación lógica mediante nombres de dominio y paths hace que las aplicaciones sean mucho más accesibles para los usuarios finales.
+
+![ingres kubernetes](image-5.png)
+
+Hay diferentes tipos de ingress managers como:
+
+![alt text](image-6.png)
+
+
+## Habilita el Ingress controller:
+
+```bash
+minikube addons enable ingress
+```
+
+## Verifica que el NGINX Ingress controller esté funcionando:
+
+```bash
+kubectl get pods -n ingress-nginx
+```
+
+## Despliega una app "hello, world":
+
+```bash
+kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
+```
+
+```bash
+kubectl get deploy
+```
+
+## Exposición del Deployment:
+
+```bash
+kubectl expose deployment web --type=NodePort --port=8080
+```
+
+```bash
+kubectl get service
+```
+
+```bash
+kubectl delete service web
+```
+
+## Accede al servicio usando la IP proporcionada:
+
+```bash
+minikube service web --url
+```
+
+## Crea un Ingress:
+
+```bash
+kubectl apply -f https://k8s.io/examples/service/networking/example-ingress.yaml
+```
+
+## Verifica que el Ingress esté correctamente configurado:
+
+```bash
+kubectl get ingress
+```
+
+```bash
+kubectl describe ingress example-ingress
+```
+
+
+```bash
+minikube tunnel
+```
+
+```bash
+curl http://hello-world.example
+```
+
+# Clase 8 ConfigMaps y Secrets: Configuración y datos sensibles
