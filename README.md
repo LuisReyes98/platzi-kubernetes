@@ -884,3 +884,111 @@ curl http://hello-world.example
 ```
 
 # Clase 8 ConfigMaps y Secrets: Configuración y datos sensibles
+
+
+## Apply ConfigMap
+```bash
+# Creates or updates the ConfigMap from the auth-config.yaml file
+kubectl apply -f auth-config.yaml
+```
+
+## Create secret imperatively
+```bash
+# Creates a Secret named    'auth-secret' with the specified key-value pairs
+kubectl create secret generic auth-secret \
+  --from-literal=client_id=myclientid \
+  --from-literal=client_secret=secret
+```
+
+## Apply Secret
+```bash
+# Creates or updates the Secret from the auth-secret.yaml file
+kubectl apply -f auth-secret.yaml
+```
+
+## View ConfigMap
+```bash
+# Lists the ConfigMap named 'auth-config' in the current namespace
+kubectl get configmap auth-config
+```
+
+## View Secret
+```bash
+# Lists the Secret named 'auth-secret' in the current namespace
+kubectl get secret auth-secret
+```
+
+## Other links
+
+- https://external-secrets.io/latest/
+
+
+# Clase 9 Modelo de red en Kubernetes: Pods y servicios
+
+![alt text](image-7.png)
+
+## Resumen
+La red de Kubernetes representa uno de los componentes más sofisticados de su arquitectura, permitiendo que pods y servicios se comuniquen de manera fluida sin importar dónde estén alojados físicamente. Esta capacidad de comunicación transparente es fundamental para construir aplicaciones distribuidas robustas y escalables, y entender cómo funciona este modelo de red nos ayuda a resolver problemas y optimizar nuestras implementaciones.
+
+## ¿Cómo funciona el modelo de red en Kubernetes?
+El modelo de red de Kubernetes se basa en un concepto aparentemente simple pero técnicamente complejo: la red plana entre pods. Esta característica permite que cada pod pueda comunicarse directamente con cualquier otro pod del clúster, incluso si están en diferentes nodos o workers.
+
+## Este diseño se fundamenta en tres reglas principales:
+
+- **Todos los nodos deben poder conectarse entre sí sin necesidad de Network Address Translation (NAT)**. Esto significa que los workers o nodos están en la misma red y tienen comunicación directa entre ellos.
+
+- **La comunicación debe ser directa entre pods.** Esta transparencia permite que un pod en un namespace (por ejemplo, frontend) pueda comunicarse con otro pod en otro namespace (como backend) utilizando simplemente direcciones IP o nombres de servicios.
+
+- **Pods y servicios comparten el mismo segmento de red.** Esta configuración facilita la comunicación entre servicios y los grupos de pods asociados a deployments u otros objetos de Kubernetes.
+
+## Componentes clave del networking en Kubernetes
+La red de Kubernetes funciona gracias a varios componentes que trabajan coordinadamente:
+
+1. Container Network Interface (CNI): Es una interfaz que permite utilizar diferentes plugins para gestionar la red. Entre las opciones más populares destacan:
+
+- Calico: Muy recomendado en la comunidad por su facilidad de aprendizaje y adaptabilidad a múltiples casos de uso.
+- Flannel: Ofrece capacidades similares para la configuración de red, aunque presenta algunas limitaciones en aspectos de seguridad.
+
+2. kube-proxy: Este componente, del que ya hemos hablado anteriormente, utiliza IPTables (mecanismo de Linux) para el enrutamiento de peticiones. Cuando alguien intenta acceder a un pod, kube-proxy:
+
+- Recibe la petición
+- La redirige a los pods apropiados del servicio
+- Actualiza las rutas en IPTables cuando hay cambios
+
+3. CoreDNS: Es el componente responsable del service discovery, permitiendo utilizar nombres de servicios para referenciar grupos específicos de pods o servicios dentro del clúster.
+
+## El modelo OSI y TCP/IP en Kubernetes
+Desde una perspectiva técnica, Kubernetes utiliza el modelo práctico TCP/IP (basado en el modelo teórico OSI):
+
+- Los pods se comunican utilizando la capa 3 (red), empleando enrutamiento y protocolo IP.
+- Los servicios utilizan protocolos de capas superiores (aplicación y transporte), aprovechando TCP, UDP y mecanismos de balanceo de carga.
+
+## ¿Por qué es importante el modelo de red en Kubernetes?
+El sofisticado modelo de red de Kubernetes es lo que permite que nuestras aplicaciones distribuidas funcionen de manera coordinada. Un clúster de Kubernetes puede ejecutarse en diversos entornos:
+
+- En la nube
+- En entornos on-premise
+- En máquinas virtuales dentro de un mismo host
+
+**En todos estos casos**, la red de Kubernetes garantiza que los componentes puedan comunicarse adecuadamente, manteniendo la disponibilidad, tolerancia a fallos y resiliencia de nuestras aplicaciones.
+
+## Service discovery y su importancia
+**CoreDNS** juega un papel fundamental en la arquitectura de Kubernetes, ocupándose del service discovery entre los servicios y grupos de pods asociados. Esto permite que cualquier componente pueda ser alcanzado tanto interna como externamente, sin preocuparse por conocer las direcciones IP exactas de cada elemento.
+
+Aunque estos conceptos pueden parecer altamente teóricos, son fundamentales para realizar un efectivo troubleshooting y comprender el comportamiento de pods y servicios dentro de un clúster de Kubernetes.
+
+El entendimiento de la red en Kubernetes constituye una base sólida para cualquier ingeniero que trabaje con esta tecnología, permitiendo diseñar arquitecturas más robustas y solucionar problemas de conectividad de forma eficiente. ¿Has experimentado alguna situación donde el conocimiento del modelo de red de Kubernetes te haya ayudado a resolver un problema? ¿Conoces cuál es la capacidad máxima por defecto en la capa de red de Kubernetes? Comparte tus experiencias en los comentarios.
+
+## Capacidad Maxima de elementos en la red de Kubernetes
+
+Kubernetes v1.34 admite clústeres de hasta 5000 nodos. En concreto, Kubernetes está diseñado para admitir configuraciones que cumplen todos los siguientes criterios:
+
+No más de 110 pods por nodo
+No más de 5.000 nodos
+No más de 150.000 pods en total
+No más de 300.000 contenedores en total
+Source: https://kubernetes.io/docs/setup/best-practices/cluster-large/#:~:text=More%20specifically%2C%20Kubernetes%20is%20designed,more%20than%20150%2C000%20total%20pods
+
+Nota: en cloud las cuotas pueden variar dependiendo del proveedor y region escogido. Se suelen reservar las capacidades de computo para los grandes clientes.
+
+## Clase 10 Tipos de servicios: ClusterIP, NodePort, LoadBalancer y ExternalName
