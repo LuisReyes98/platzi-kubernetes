@@ -991,4 +991,110 @@ Source: https://kubernetes.io/docs/setup/best-practices/cluster-large/#:~:text=M
 
 Nota: en cloud las cuotas pueden variar dependiendo del proveedor y region escogido. Se suelen reservar las capacidades de computo para los grandes clientes.
 
-## Clase 10 Tipos de servicios: ClusterIP, NodePort, LoadBalancer y ExternalName
+# Clase 10 Tipos de servicios: ClusterIP, NodePort, LoadBalancer y ExternalName
+
+Resumen
+¿Cómo exponer aplicaciones en Kubernetes?
+A la hora de trabajar con Kubernetes, uno de los retos más importantes es aprender a exponer nuestras aplicaciones al mundo exterior. Es decir, habilitar la conexión de nuestras aplicaciones desplegadas en un clúster con usuarios externos. En el ecosistema de Kubernetes, existen cuatro componentes principales que se utilizan para esta tarea: NodePort, ClusterIP, LoadBalancer y ExternalName.
+
+¿Qué es un NodePort?
+El concepto de NodePort es esencial dentro de Kubernetes. Este tipo de servicio nos permite exponer un pod en un puerto específico de cada nodo del clúster. Es notable que en escenarios más avanzados, como en el uso de MiniCube, puedes crear clústeres de múltiples nodos.
+
+Para configurarlo, lo primero que debes hacer es definir este servicio en un archivo YAML. Un ejemplo básico incluye los siguientes elementos:
+
+Metadata para relacionar el servicio con un ReplicaSet, Deployment o Pod.
+El containerPort que el deployment utiliza (e.g., 8080).
+El nodePort que permite conectar el tráfico externo hacia el pod.
+Aquí te muestro cómo se vería un archivo de configuración:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-nodeport
+spec:
+  selector:
+    app: HelloNodePort
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30007
+Para implementar este servicio, utiliza el comando:
+
+kubectl apply -f deployment-nodeport.yaml
+¿Para qué sirve un ClusterIP?
+El servicio tipo ClusterIP es usado cuando se desea exponer aplicaciones dentro del mismo clúster. Esta funcionalidad es ideal cuando varios microservicios o aplicaciones necesitan comunicarse entre sí dentro del clúster.
+
+La configuración es bastante parecida al NodePort, pero enfocada en la conectividad interna. Aquí, el servicio toma una dirección IP específica del rango CIDR asignado al clúster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-cluster-ip
+spec:
+  selector:
+    app: HelloClusterIP
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+Para desplegar este servicio, usa:
+
+kubectl apply -f deployment-clusterip.yaml
+¿Cómo se gestiona un LoadBalancer?
+Este es el servicio adecuado cuando se trabaja en entornos de nube como AWS, GCP o Azure. Al detectarse un servicio tipo LoadBalancer, el proveedor de la nube automáticamente despliega una instancia que gestionará el tráfico.
+
+Aquí tienes un ejemplo de configuración:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-loadbalancer
+spec:
+  selector:
+    app: HelloLoadBalancer
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+El comando para aplicarlo es:
+
+kubectl apply -f deployment-loadbalancer.yaml
+## ¿Qué es un ExternalName y cuándo usarlo?
+
+El servicio ExternalName es muy útil para conectar Kubernetes con recursos de terceros, como bases de datos externas. A diferencia de los tipos anteriores, ExternalName no gestiona pods directos, sino que encapsula la URL del recurso externo, facilitando su uso y refactorización en grandes aplicaciones.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-database-service
+spec:
+  type: ExternalName
+  externalName: database.example.com
+```
+
+## Para crear este recurso simplemente ejecuta:
+
+`kubectl apply -f externalname.yaml`
+
+Estos son los cuatro tipos fundamentales de servicios en Kubernetes para exponer aplicaciones. Cada uno tiene su caso de uso específico y ofrecen una forma distinta de gestionar el tráfico hacia y desde tus aplicaciones. Explora y decide cuál es el mejor para tus necesidades, y no dejes de compartir tu experiencia en los comentarios.
+
+Nos permite conectar nuestro cluster con recursos de terceros
+
+## Los tipos de servicios en Kubernetes tienen diferentes casos de uso en la nube:
+
+**ClusterIP**: Ideal para comunicar servicios internos en un clúster. Por ejemplo, microservicios que se comunican entre sí sin exponer tráfico externo.
+
+**NodePort**: Útil para acceder a un servicio desde fuera del clúster utilizando el puerto de un nodo. Puede ser usado para pruebas rápidas de aplicaciones.
+
+**LoadBalancer**: Se usa en entornos de producción en la nube (como AWS, GCP, Azure) para distribuir tráfico a múltiples instancias de un servicio. Permite que aplicaciones estén disponibles públicamente.
+
+**ExternalName**: Facilita la integración con servicios externos, como bases de datos o APIs, al permitir que se utilice un nombre DNS en lugar de una URL directa, simplificando la configuración.
+
+Cada uno de estos servicios optimiza la comunicación y disponibilidad de aplicaciones en la nube.
+
+# 11 Volúmenes persistentes (PV) y reclamaciones (PVC)
