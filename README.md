@@ -1256,3 +1256,124 @@ Ahorro de costos: Especialmente en entornos de desarrollo, evita tener que mante
 En la era de la inteligencia artificial, la información se ha convertido en oro. Implementar correctamente PV y PVC garantiza que este valioso recurso esté protegido y disponible para tus aplicaciones en Kubernetes, evitando la pérdida de datos críticos para tu organización o tus clientes.
 
 ¿Has implementado almacenamiento persistente en tus clústeres de Kubernetes? ¿Qué desafíos has enfrentado? Comparte tu experiencia en los comentarios.
+
+# 12 DaemonSets y StatefulSets
+
+## Resumen
+La gestión adecuada de aplicaciones en entornos productivos de Kubernetes requiere el conocimiento de componentes especializados como DaemonSets y StatefulSets. Estos objetos ofrecen soluciones específicas para distintos casos de uso, permitiendo implementar arquitecturas robustas y escalables. Dominando estos conceptos, podrás optimizar el despliegue de aplicaciones que requieran alta disponibilidad o persistencia de datos.
+
+## ¿Qué son los DaemonSets y StatefulSets en Kubernetes?
+Los DaemonSets y StatefulSets son objetos de Kubernetes diseñados para casos de uso específicos en entornos productivos. Cada uno tiene características particulares que los hacen adecuados para diferentes situaciones, especialmente cuando se requiere un comportamiento predecible en cuanto a la ejecución y persistencia de los pods.
+
+Ejempo en entornos productivos con bases de datos es donde toman lugar estos objetos
+
+Un DaemonSet garantiza que todos los nodos (o un conjunto específico de nodos) ejecuten una copia de un pod. Cuando se agregan nodos al clúster, se les añade automáticamente un pod del DaemonSet. La característica principal es que cada réplica configurada en un DaemonSet se ejecuta en un nodo a la vez. Esto significa que si configuramos 3 o 4 réplicas, necesitaríamos la misma cantidad de nodos.
+
+Por otro lado, un StatefulSet está diseñado para aplicaciones que requieren persistencia e identificadores estables. A diferencia de los Deployments regulares, los StatefulSets mantienen una identidad persistente para cada pod, lo que resulta útil para aplicaciones con estado como bases de datos.
+
+## ¿Cómo crear un DaemonSet en Kubernetes?
+Para crear un DaemonSet, necesitamos definir su especificación en un archivo YAML. La estructura es similar a otros objetos de Kubernetes, con algunas particularidades:
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: nginxApp
+  template:
+    metadata:
+      labels:
+        app: nginxApp
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+```
+
+En este ejemplo, definimos un DaemonSet con un pod que ejecuta Nginx. Es importante definir los recursos que nuestros pods utilizarán, como se muestra en la sección de resources. Esto establece que el pod tendrá asignados inicialmente 64Mi de memoria y 250m de CPU, con límites de 128Mi y 500m respectivamente.
+
+Para crear este DaemonSet, ejecutamos:
+
+kubectl apply -f daemonset.yaml
+Y podemos verificar su creación con:
+
+kubectl get ds
+¿Cómo implementar StatefulSets con almacenamiento persistente?
+Los StatefulSets generalmente se utilizan junto con volúmenes persistentes (PV) y reclamos de volúmenes persistentes (PVC) para mantener el estado de las aplicaciones. Antes de crear un StatefulSet, necesitamos configurar estos recursos de almacenamiento:
+
+Primero, creamos un PV y PVC:
+kubectl apply -f pv-pvc.yaml
+Luego, creamos el StatefulSet:
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-sts
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: nginx-data
+          mountPath: /var/www/html
+  volumeClaimTemplates:
+  - metadata:
+      name: nginx-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 1Gi
+Una característica importante de los StatefulSets es que requieren un servicio "headless" (ClusterIP: None). Este servicio permite que cada pod del StatefulSet tenga una dirección DNS estable, lo que facilita la comunicación entre pods.
+
+Al crear este StatefulSet, notarás que los pods se crean con nombres predecibles:
+
+nginx-sts-0
+nginx-sts-1
+¿Cuáles son los casos de uso y limitaciones de DaemonSets y StatefulSets?
+Casos de uso para DaemonSets:
+Agentes de monitoreo: como Prometheus, que necesitan ejecutarse en cada nodo
+Recolección de logs: herramientas como Logstash o Fluentd
+Proxies de red: como kube-proxy
+Daemons de almacenamiento: que necesitan ejecutarse en cada nodo
+Casos de uso para StatefulSets:
+Bases de datos: MySQL, PostgreSQL (para desarrollo, no siempre recomendado para producción)
+Sistemas distribuidos: Kafka, Elasticsearch
+Aplicaciones que requieren identidades persistentes
+Limitaciones:
+Tanto los DaemonSets como los StatefulSets tienen restricciones importantes a considerar:
+
+No permiten rollbacks inmediatos como los Deployments
+Solo se pueden escalar o reducir de un pod a la vez
+Esto puede afectar la experiencia del usuario dependiendo del dominio de aplicación
+Es importante entender estas limitaciones para determinar si estos objetos son adecuados para tu caso de uso específico o si sería mejor utilizar otras alternativas como los Deployments.
+
+El poder de Kubernetes radica en su capacidad para desacoplar componentes y crear pods efímeros cuando sea necesario, proporcionando soluciones específicas para diferentes escenarios de despliegue a través de sus diversos objetos y recursos.
+
+¿Has utilizado DaemonSets o StatefulSets en tus proyectos? ¿Qué otros casos de uso crees que serían adecuados para estos objetos? Comparte tu experiencia en los comentarios.
