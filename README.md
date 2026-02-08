@@ -755,7 +755,7 @@ kubectl delete pod hello-deployment-<pod-id>
 kubectl set image deployment/hello-deployment hello-app=gcr.io/google-samples/hello-app:2.0
 ```
 
-**Verificar el progreso de la actualización**
+**Verificar el progreso de la actualización** tras un cambio en el deployment, podemos verificar el estado del rollout para asegurarnos de que la actualización se está realizando correctamente:
 
 ```sh
 kubectl rollout status deployment/hello-deployment
