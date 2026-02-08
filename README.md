@@ -528,6 +528,10 @@ https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-read
 kubectl get namespaces
 ```
 
+```sh
+kubectl get ns
+```
+
 
 Crear namespace
 
@@ -539,6 +543,12 @@ kubectl create ns pod-test
 Crear un pod dentro del namespace pod-test
 ```sh
 kubectl create pod -n pod-test
+```
+
+Borrar el namespace
+
+```sh
+kubectl delete ns pod-test
 ```
 
 
@@ -578,7 +588,7 @@ kubectl get pods
 kubectl port-forward pod/nginx-nodeport 8080:80
 ```
 
-# Que significa Stateless vs statefull: tener o no tener estado, ahí está el dilema.
+## Que significa Stateless vs statefull: tener o no tener estado, ahí está el dilema.
 
 En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (con estado). Esto afecta cómo se diseñan y gestionan los Pods.
 
@@ -591,6 +601,32 @@ En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (co
 - Guardan datos persistentes y necesitan mantener el estado entre reinicios.
 - Ejemplo: Bases de datos como MySQL o Redis.
 - Requieren volúmenes persistentes (Persistent Volumes) para almacenar datos.
+
+##  Diferencia entre replica set y deployment
+
+[Kubernetes Deployment vs. ReplicaSet: Understanding the Differences](https://www.linkedin.com/pulse/kubernetes-deployment-vs-replicaset-understanding-differences-uw3ic/#:~:text=Use%20a%20ReplicaSet%20if%20you,recommended%20for%20most%20production%20workloads)
+
+### Key Differences Between Deployment and ReplicaSet
+
+
+| Feature | ReplicaSet | Deployment |
+|---------|------------|------------|
+| Ensures a fixed number of pods | ✅ Yes | ✅ Yes |
+| Supports rolling updates | ❌ No | ✅ Yes |
+| Allows rollback of changes | ❌ No | ✅ Yes |
+| Manages multiple ReplicaSets for version control | ❌ No | ✅ Yes |
+| Recommended for production workloads | ❌ No | ✅ Yes |
+
+
+### When to Use Which?
+Use a ReplicaSet if you need to ensure a fixed number of running pods but don’t require rolling updates.
+Use a Deployment if you need rolling updates, automated scaling, and rollback capabilities (recommended for most production workloads).
+
+###  Conclusion
+While ReplicaSets are an essential Kubernetes primitive, they are rarely used directly. Deployments provide a higher-level abstraction that simplifies managing applications at scale. In almost all cases, using a Deployment instead of a standalone ReplicaSet is the best practice.
+
+
+**En entornos productivos,** los pods sueles estar englobados dentro de un ReplicaSet, y los ReplicaSets a su vez son gestionados por un Deployment. Esto se debe a que el Deployment ofrece funcionalidades adicionales como actualizaciones sin tiempo de inactividad (rolling updates) y la capacidad de revertir cambios si algo sale mal.
 
 ## ReplicaSets: Garantizar la disponibilidad de Pods.
 
@@ -668,7 +704,7 @@ El deployment es el objeto mayor que orquesta a un replicaset.
 **Describe el replicaset de un deployment**
 
 ```sh
-kubectl describe replicaset <replicaset-name>
+kubectl describe replicaset ${replicaset-name}
 ```
 
 Y mostrara la informacion del deployment que lo controla

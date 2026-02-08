@@ -21,6 +21,12 @@ kubectl describe pods nginx-nodeport
 ```
 
 ```sh
+k describe pod nginx-nodeport
+```
+
+Get All Services
+
+```sh
 kubectl get svc
 ```
 
