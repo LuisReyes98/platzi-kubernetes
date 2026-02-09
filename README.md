@@ -1029,11 +1029,11 @@ Nota: en cloud las cuotas pueden variar dependiendo del proveedor y region escog
 
 # Clase 10 Tipos de servicios: ClusterIP, NodePort, LoadBalancer y ExternalName
 
-Resumen
+## Resumen
 ¿Cómo exponer aplicaciones en Kubernetes?
 A la hora de trabajar con Kubernetes, uno de los retos más importantes es aprender a exponer nuestras aplicaciones al mundo exterior. Es decir, habilitar la conexión de nuestras aplicaciones desplegadas en un clúster con usuarios externos. En el ecosistema de Kubernetes, existen cuatro componentes principales que se utilizan para esta tarea: NodePort, ClusterIP, LoadBalancer y ExternalName.
 
-¿Qué es un NodePort?
+## ¿Qué es un NodePort?
 El concepto de NodePort es esencial dentro de Kubernetes. Este tipo de servicio nos permite exponer un pod en un puerto específico de cada nodo del clúster. Es notable que en escenarios más avanzados, como en el uso de MiniCube, puedes crear clústeres de múltiples nodos.
 
 Para configurarlo, lo primero que debes hacer es definir este servicio en un archivo YAML. Un ejemplo básico incluye los siguientes elementos:
@@ -1043,6 +1043,7 @@ El containerPort que el deployment utiliza (e.g., 8080).
 El nodePort que permite conectar el tráfico externo hacia el pod.
 Aquí te muestro cómo se vería un archivo de configuración:
 
+```sh
 apiVersion: v1
 kind: Service
 metadata:
@@ -1056,6 +1057,7 @@ spec:
       port: 80
       targetPort: 8080
       nodePort: 30007
+```
 Para implementar este servicio, utiliza el comando:
 
 kubectl apply -f deployment-nodeport.yaml
@@ -1350,6 +1352,8 @@ Los StatefulSets generalmente se utilizan junto con volúmenes persistentes (PV)
 Primero, creamos un PV y PVC:
 kubectl apply -f pv-pvc.yaml
 Luego, creamos el StatefulSet:
+
+```yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -1386,23 +1390,34 @@ spec:
       resources:
         requests:
           storage: 1Gi
+
+```
+
 Una característica importante de los StatefulSets es que requieren un servicio "headless" (ClusterIP: None). Este servicio permite que cada pod del StatefulSet tenga una dirección DNS estable, lo que facilita la comunicación entre pods.
 
 Al crear este StatefulSet, notarás que los pods se crean con nombres predecibles:
 
+```txt
 nginx-sts-0
 nginx-sts-1
-¿Cuáles son los casos de uso y limitaciones de DaemonSets y StatefulSets?
-Casos de uso para DaemonSets:
-Agentes de monitoreo: como Prometheus, que necesitan ejecutarse en cada nodo
-Recolección de logs: herramientas como Logstash o Fluentd
-Proxies de red: como kube-proxy
-Daemons de almacenamiento: que necesitan ejecutarse en cada nodo
-Casos de uso para StatefulSets:
-Bases de datos: MySQL, PostgreSQL (para desarrollo, no siempre recomendado para producción)
-Sistemas distribuidos: Kafka, Elasticsearch
-Aplicaciones que requieren identidades persistentes
-Limitaciones:
+```
+
+### ¿Cuáles son los casos de uso y limitaciones de DaemonSets y StatefulSets?
+
+#### Casos de uso para DaemonSets:
+- Agentes de monitoreo: como Prometheus, que necesitan ejecutarse en cada nodo
+- Recolección de logs: herramientas como Logstash o Fluentd
+- Proxies de red: como kube-proxy
+- Daemons de almacenamiento: que necesitan ejecutarse en cada nodo
+
+
+#### Casos de uso para StatefulSets:
+- Bases de datos: MySQL, PostgreSQL (para desarrollo, no siempre recomendado para producción)
+- Sistemas distribuidos: Kafka, Elasticsearch
+- Aplicaciones que requieren identidades persistentes
+
+#### Limitaciones:
+
 Tanto los DaemonSets como los StatefulSets tienen restricciones importantes a considerar:
 
 No permiten rollbacks inmediatos como los Deployments
