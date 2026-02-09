@@ -1428,3 +1428,65 @@ Es importante entender estas limitaciones para determinar si estos objetos son a
 El poder de Kubernetes radica en su capacidad para desacoplar componentes y crear pods efímeros cuando sea necesario, proporcionando soluciones específicas para diferentes escenarios de despliegue a través de sus diversos objetos y recursos.
 
 ¿Has utilizado DaemonSets o StatefulSets en tus proyectos? ¿Qué otros casos de uso crees que serían adecuados para estos objetos? Comparte tu experiencia en los comentarios.
+
+# Clase 13 
+
+Resumen
+¿Cómo desplegar una aplicación de prueba con Kubernetes'
+Desplegar aplicaciones en Kubernetes representa una gran ventaja para desarrolladores en la administración de aplicaciones en la nube. Este proceso de aprendizaje resulta esencial si buscas escalar eficientemente tus servicios. Utilizar herramientas como Docker y Kubernetes es fundamental para conseguir una orquestación efectiva de contenedores en producción. Este es un tema que aborda desde la integración con Docker hasta la adaptación utilizando Kubernitis.
+
+¿Cómo se estructura la aplicación?
+La aplicación consta de un backend y un frontend, desarrollados a partir de proyectos del curso avanzado de Docker. Estos componentes se dividen de la siguiente manera:
+
+Backend (Python):
+
+Ruta get a /getmyinfo que expone un JSON
+
+Puerto expuesto: 5001
+
+Dockerfile con una imagen de Python Alpine, instalando Flask, Flask Cors y Waitress.
+
+Frontend (Nginx):
+
+Copia de archivos de sitio hacia /usr/share/nginx/html
+
+Ejecuta un script request.js que hace una petición a localhost:5001.
+
+¿Cómo se usa Docker Compose para desplegar esta aplicación?
+Para gestionar esta aplicación, Docker Compose se convierte en un aliado invaluable. Realiza las siguientes acciones:
+
+Construcción de los contenedores:
+
+docker-compose build
+
+Recomendación: algunos sistemas operativos requieran ejecutar docker compose build en vez de docker-compose build.
+Ejecución de la aplicación:
+
+docker-compose up
+
+Válida que el frontend (puerto 8080) y el backend (puerto 5001) están funcionando a través de un navegador.
+¿Cómo adaptar tu despliegue a Kubernetes?
+El paso a Kubernetes requiere de una adaptación cuidadosa de la aplicación existante en Docker. Aquí te mostramos cómo:
+
+Creación de archivos YAML necesarios:
+Configurar archivos deployment y service tanto para el backend como para el frontend.
+Ejecución de servicios en Kubernetes:
+Utiliza MiniCube que es ideal para pruebas locales.
+Cambia el tipo de servicio de NodePort a LoadBalancer si se presentan errores de conexión.
+Aplicar los cambios:
+
+kubectl apply -f backend/ kubectl apply -f frontend/
+
+¿Qué herramientas adicionales se pueden emplear?
+MiniCube:
+
+Tienes la opción de hacer un túnel con minikube service para simular el tráfico desde tu máquina local.
+
+Edición y despliegue de servicios:
+
+Usa comandos directamente en kubectl para revisar servicios y pods: bash kubectl get pods kubectl get services
+
+¿Cuáles son los desafíos adicionales?
+Ahora que conoces el despliegue básico, se presenta el reto de conectar una base de datos como PostgreSQL o MySQL. Integra las funciones de backend para que el frontend procese datos desde esta fuente. Ajustar la configuración de manera que optimice las consultas y refleje la información actualizada brinda una aplicación más robusta y completa.
+
+Desarrollar aplicaciones con Kubernetes ofrece no solo conocimiento técnico específico, sino también la habilidad de escalar servicios de manera eficiente. Te alentamos a que sigas explorando y perfeccionando tus habilidades.
