@@ -1,5 +1,7 @@
 # 14-jobs-cronjobs
 
+Job: ejecucion unica CronJob: ejecucion programada y repetitiva
+
 # MySQL StatefulSet with Backup Job
 
 ## 1. Create MySQL Secrets
@@ -33,6 +35,7 @@ kubectl get pvc -l app=mysql
 kubectl get svc mysql-service
 
 # Verify MySQL is running
+# And running a console inside the mysql container
 kubectl exec -it mysql-0 -- mysql -u root -p
 # After it you will prompt for password, use the password you created in the mysql-secret.yaml file
 
@@ -57,6 +60,11 @@ kubectl get pods -l job-name=mysql-backup
 
 # Check backup logs
 kubectl logs -l job-name=mysql-backup
+
+
+minikube ssh
+ls
+cd /mnt/
 
 # Verify backup file
 kubectl exec -it $POD_NAME -- ls -l /backup

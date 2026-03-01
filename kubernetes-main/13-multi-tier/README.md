@@ -58,13 +58,26 @@ Si tú hiciste docker compose sin ese comando, las imágenes se quedaron solo en
 ✅ ¿Cómo arreglarlo?
 
 Ejecuta:
-eval $(minikube docker-env)
 
+```sh
+eval $(minikube docker-env)
+```
 Reconstruye las imágenes:
-docker build -t backend:latest ./backend docker build -t frontend:latest ./frontend
+```sh
+docker build -t backend:latest ./backend
+docker build -t frontend:latest ./frontend
+```
 
 Lanza los Deployments:
-kubectl apply -f k8s/backend/ kubectl apply -f k8s/frontend/
+```sh
+kubectl apply -f k8s/backend/
+kubectl apply -f k8s/frontend/
+```
+
+```sh
+k delete -f curso-de-docker-fundamentos/k8s/frontend/
+k delete -f curso-de-docker-fundamentos/k8s/backend/
+```
 
 Y listo 🚀. Los Pods deberían levantar sin problemas.
 

@@ -1429,7 +1429,7 @@ El poder de Kubernetes radica en su capacidad para desacoplar componentes y crea
 
 ¿Has utilizado DaemonSets o StatefulSets en tus proyectos? ¿Qué otros casos de uso crees que serían adecuados para estos objetos? Comparte tu experiencia en los comentarios.
 
-# Clase 13 
+# Clase 13 Despliegue de una aplicación multi-tier en Local
 
 Resumen
 ¿Cómo desplegar una aplicación de prueba con Kubernetes'
@@ -1440,7 +1440,9 @@ La aplicación consta de un backend y un frontend, desarrollados a partir de pro
 
 Backend (Python):
 
+
 Ruta get a /getmyinfo que expone un JSON
+
 
 Puerto expuesto: 5001
 
@@ -1475,7 +1477,9 @@ Utiliza MiniCube que es ideal para pruebas locales.
 Cambia el tipo de servicio de NodePort a LoadBalancer si se presentan errores de conexión.
 Aplicar los cambios:
 
+```sh
 kubectl apply -f backend/ kubectl apply -f frontend/
+```
 
 ¿Qué herramientas adicionales se pueden emplear?
 MiniCube:
@@ -1490,3 +1494,17 @@ Usa comandos directamente en kubectl para revisar servicios y pods: bash kubectl
 Ahora que conoces el despliegue básico, se presenta el reto de conectar una base de datos como PostgreSQL o MySQL. Integra las funciones de backend para que el frontend procese datos desde esta fuente. Ajustar la configuración de manera que optimice las consultas y refleje la información actualizada brinda una aplicación más robusta y completa.
 
 Desarrollar aplicaciones con Kubernetes ofrece no solo conocimiento técnico específico, sino también la habilidad de escalar servicios de manera eficiente. Te alentamos a que sigas explorando y perfeccionando tus habilidades.
+
+
+# Clase 14 Jobs y CronJobs: Tareas únicas y programadas
+
+Resumen
+Los jobs y cronjobs en Kubernetes representan una solución elegante para ejecutar tareas programadas o efímeras dentro de tu infraestructura cloud. Estas herramientas te permiten optimizar recursos, automatizar procesos críticos y gestionar de manera eficiente aquellas aplicaciones que no necesitan estar en ejecución constante, como ocurre con backups, migraciones de datos o limpieza de logs.
+
+¿Qué diferencia a los jobs y cronjobs de otros objetos en Kubernetes?
+
+A diferencia de deployments o statefulsets que mantienen pods en ejecución continua, los jobs y cronjobs están diseñados para tareas que deben ejecutarse una vez o repetidamente en intervalos específicos. El verdadero valor de estos recursos radica en su capacidad para ejecutar procesos completos y luego liberar recursos, algo perfecto para entornos donde la optimización es crucial.
+
+Mientras un job se utiliza para ejecutar una tarea única hasta su finalización, un cronjob permite programar la ejecución repetitiva de jobs según una programación temporal definida mediante sintaxis cron.
+
+# Clase 15
