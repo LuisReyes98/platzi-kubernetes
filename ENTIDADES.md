@@ -1,0 +1,22 @@
+# Lista de entidades en Kubernetes que pueden ser gestionadas a través de kubectl y otros comandos:
+
+- pods: `kubectl get pods`
+- deployments: `kubectl get deployments`
+- services: `kubectl get services`
+- nodes: `kubectl get nodes`
+- namespaces: `kubectl get namespaces`
+- configmaps: `kubectl get configmaps`
+- secrets
+- volumes
+- persistentvolumes
+- persistentvolumeclaims
+- statefulsets
+- daemonsets
+- replicasets
+- jobs
+- cronjobs
+- ingresses
+- networkpolicies
+- resourcequotas
+- horizontalpodautoscalers
+- verticalpodautoscalers

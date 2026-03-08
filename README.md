@@ -1508,3 +1508,140 @@ A diferencia de deployments o statefulsets que mantienen pods en ejecución cont
 Mientras un job se utiliza para ejecutar una tarea única hasta su finalización, un cronjob permite programar la ejecución repetitiva de jobs según una programación temporal definida mediante sintaxis cron.
 
 # Clase 15
+
+## Resumen
+La escalabilidad en Kubernetes es un aspecto fundamental para garantizar que tus aplicaciones puedan manejar fluctuaciones de tráfico sin comprometer la experiencia del usuario. A través de herramientas como el Horizontal Pod Autoscaler (HPA) y el Vertical Pod Autoscaler (VPA), puedes implementar estrategias eficientes que permitirán a tu aplicación adaptarse dinámicamente a las demandas del entorno, evitando degradaciones de servicio durante picos de tráfico como el Black Friday.
+
+## ¿Cómo funciona el escalamiento horizontal en Kubernetes?
+
+**El Horizontal Pod Autoscaler (HPA)** es un objeto nativo de Kubernetes que permite incrementar o disminuir dinámicamente la cantidad de pods dentro de un deployment o StatefulSet basándose en métricas específicas.
+
+![alt text](image-12.png)
+
+![alt text](image-13.png)
+
+Cuando enfrentamos un escenario como el Black Friday, donde el tráfico aumenta considerablemente, el HPA nos permite responder automáticamente. Imaginemos la situación:
+
+**Antes de escalar:** tenemos un pod pequeño en un nodo worker, sin mucho tráfico, funcionando normalmente.
+**Durante el pico de tráfico:** el HPA detecta el aumento en el consumo de recursos.
+**Después de escalar:** el HPA aumenta automáticamente la cantidad de pods asociados al mismo deployment para manejar la carga adicional.
+
+Un HPA no escala mas alla de los limites de cluster
+
+A diferencia de un deployment común, que solo puede tener un número fijo de pods, el HPA ajusta dinámicamente la cantidad de réplicas según el consumo de CPU u otros recursos monitoreados.
+
+## Consideraciones importantes del HPA
+
+Al implementar el HPA debes tener en cuenta varios aspectos críticos:
+
+Dependencia de métricas: necesitas configurar servicios como Metric Server para que el HPA pueda monitorear el consumo de recursos.
+Escalado reactivo, no proactivo: el HPA reacciona a cambios en la demanda, pero no anticipa picos de tráfico.
+Limitación por recursos del cluster: no puede escalar más allá de los límites físicos de tu cluster.
+Enfoque en una métrica: generalmente CPU, lo que puede ser ineficiente si necesitas escalar basándote en memoria.
+
+## ¿Qué es el escalamiento vertical y cómo implementarlo?
+
+**El Vertical Pod Autoscaler (VPA)** ofrece un enfoque diferente: en lugar de aumentar el número de pods, asigna más recursos a los pods existentes dentro de un deployment.
+
+![alt text](image-14.png)
+
+Su funcionamiento es el siguiente:
+
+**Antes de escalar:** tienes un pod pequeño con recursos limitados (por ejemplo, 100m CPU y 100Mi de memoria).
+**Durante el pico de tráfico:** el VPA detecta la necesidad de más recursos.
+
+**Proceso de escalado:** el VPA mata el pod existente y lo reinicia con más recursos asignados (por ejemplo, 500m CPU y 500Mi de memoria).
+
+Escala creando un nuevo pod con mas recursos, no aumenta los recursos del pod existente
+
+
+## Limitaciones del VPA a considerar
+
+El VPA también tiene limitaciones que debes evaluar:
+![alt text](image-15.png)
+
+Puede ocurrir una degradacion de servicio ya que si hay multiples pods el escalado VPA los tumba todos antes de volverlos a crear con nuevos recursos, lo que puede causar interrupciones.
+
+**Reinicio de pods:** mata los pods para recrearlos con nuevos recursos, lo que puede causar interrupciones.
+**Incompatibilidad con HPA:** no se debe usar VPA con HPA para las mismas métricas (CPU o memoria) porque pueden entrar en conflicto.
+**Dependencia de datos históricos:** requiere sistemas de monitoreo y observabilidad robustos.
+**Configuración limitada con pods multi-contenedor:** mata todos los contenedores del pod durante el proceso, lo que puede degradar el servicio.
+
+![alt text](image-16.png)
+
+## ¿Cómo implementar HPA y VPA en la práctica?
+
+La implementación de HPA y VPA se realiza a través de archivos YAML con configuraciones específicas:
+
+Configuración de HPA
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myApp-deployment
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 20
+```
+
+**Para los limites en HPA no deberiamos dejar que llegue al 100% de utilización de CPU, se recomienda que este entre el 70% u 80% pero tambien considerar cosas como el tiempo de levantamiento de un pod**
+
+En esta configuración:
+
+Se define un objetivo de escalamiento (un deployment específico)
+Se establece un mínimo y máximo de réplicas (1 a 4)
+Se configura el umbral de utilización de CPU (20%)
+Configuración de VPA
+
+
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: myapp-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myApp-deployment
+  updatePolicy:
+    updateMode: Auto
+  resourcePolicy:
+    containerPolicies:
+      - containerName: '*'
+        minAllowed:
+          cpu: 1m
+          memory: 4Mi
+        maxAllowed:
+          cpu: 8000m
+          memory: 32Mi
+        controlledResources: ["cpu", "memory"]
+Esta configuración:
+
+Especifica el deployment objetivo
+Define una política de actualización automática
+Establece límites mínimos y máximos para recursos de CPU y memoria
+Prueba de escalamiento
+
+Para probar el escalamiento, podemos generar carga artificial:
+
+
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://myapp-service; done"
+Este comando crea un pod que realiza peticiones constantes a nuestro servicio, permitiendo observar cómo reaccionan los mecanismos de escalamiento.
+
+El resultado esperado es que ante un aumento de carga, nuestra aplicación mantenga un rendimiento óptimo, evitando degradaciones o demoras, incluso durante picos extremos de tráfico.
+
+La implementación de estas estrategias de escalamiento es esencial para aplicaciones modernas que necesitan adaptarse dinámicamente a las demandas de los usuarios, proporcionando una experiencia consistente y de alta calidad en todo momento.
+
+¿Has implementado alguna estrategia de escalamiento en tus aplicaciones? Comparte tu experiencia y las lecciones aprendidas en la sección de comentarios.
