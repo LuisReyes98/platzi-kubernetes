@@ -27,6 +27,10 @@ minikube addons enable metrics-server
 kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.001; do wget -q -O- http://my-app-service; done"
 ```
 
+```sh
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://my-app-service; done"
+```
+
 # Monitor HPA y Kubernetes dashboard
 
 ```bash
@@ -37,7 +41,10 @@ watch -n 0.5 kubectl top pods
 
 ## Deploy VPA
 
+VPA no es facil de instalar en entornos productivos ya que require componentes extras que no trae kubernetes por defecto.
+
 # Enlaces para instalar los CRD de VPA
+
 
 <!-- https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/installation.md -->
 

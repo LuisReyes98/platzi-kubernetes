@@ -1605,7 +1605,7 @@ Se establece un mínimo y máximo de réplicas (1 a 4)
 Se configura el umbral de utilización de CPU (20%)
 Configuración de VPA
 
-
+```yaml
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
@@ -1627,6 +1627,8 @@ spec:
           cpu: 8000m
           memory: 32Mi
         controlledResources: ["cpu", "memory"]
+```
+
 Esta configuración:
 
 Especifica el deployment objetivo
@@ -1636,8 +1638,10 @@ Prueba de escalamiento
 
 Para probar el escalamiento, podemos generar carga artificial:
 
-
+```sh
 kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://myapp-service; done"
+```
+
 Este comando crea un pod que realiza peticiones constantes a nuestro servicio, permitiendo observar cómo reaccionan los mecanismos de escalamiento.
 
 El resultado esperado es que ante un aumento de carga, nuestra aplicación mantenga un rendimiento óptimo, evitando degradaciones o demoras, incluso durante picos extremos de tráfico.
@@ -1645,3 +1649,9 @@ El resultado esperado es que ante un aumento de carga, nuestra aplicación mante
 La implementación de estas estrategias de escalamiento es esencial para aplicaciones modernas que necesitan adaptarse dinámicamente a las demandas de los usuarios, proporcionando una experiencia consistente y de alta calidad en todo momento.
 
 ¿Has implementado alguna estrategia de escalamiento en tus aplicaciones? Comparte tu experiencia y las lecciones aprendidas en la sección de comentarios.
+
+### Instalacion de VPA
+
+https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/installation.md
+
+# Clase 16
