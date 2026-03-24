@@ -26,6 +26,10 @@ minikube addons list
 minikube addons enable metrics-server
 ```
 
+```sh
+kubectl get pods -n kube-system
+```
+
 ### Monitor Resource Usage
 ```bash
 # View resource usage of pods (CPU and Memory)

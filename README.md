@@ -1654,4 +1654,78 @@ La implementación de estas estrategias de escalamiento es esencial para aplicac
 
 https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/installation.md
 
-# Clase 16
+# Clase 16 Escalado de aplicaciones en Kubernetes
+
+## ¿Cómo funciona el escalamiento en Kubernetes?
+
+El escalamiento es vital para que una aplicación funcione correctamente en un entorno productivo. Kubernetes ofrece tres opciones principales de escalamiento: escalamiento de pods horizontal, escalamiento de pods vertical y escalamiento de clúster. Cada enfoque tiene beneficios únicos y aplicaciones específicas que lo hacen adecuado para distintas necesidades operativas.
+
+### HPA Explicacion
+
+![HPA](image-17.png)
+
+El pod existe dentro de un ReplicaSet
+
+El ReplicaSet existe dentro de un Deployment
+
+El Deployment es manejado por un Load Balancer
+
+El HPA se encarga que el ReplicaSet ya no tengo un solo pod sino que tenga 2.
+
+### VPA Explicacion
+
+![alt text](image-18.png)
+
+El pod existe dentro de un ReplicaSet y al cambiar crea un pod mas grande destruyendo el pod anterior.
+
+El VPA tiene el riesgo de generar una degradacion de servicio
+
+## ¿Qué es el horizontal pod autoscaler?
+
+El escalamiento horizontal en Kubernetes implica crear múltiples instancias de un pod para gestionar una carga de trabajo creciente. Este enfoque es ideal cuando una aplicación requiere más instancias para manejar un aumento en las solicitudes entrantes.
+
+Factores de activación: el sistema puede aumentar el número de pods si detecta que los existentes están cerca de su capacidad máxima, ya sea por CPU o uso de memoria.
+
+Configuración: puedes definir umbrales, como el uso del 80% de CPU, para activar nuevos pods. La especificación del Horizontal Pod Autoscaler (HPA) en el archivo YAML incluye estos criterios, permitiendo asignaciones dinámicas de recursos según la demanda.
+
+apiVersion: autoscaling/v2 kind: HorizontalPodAutoscaler metadata: name: mi-hpa spec: scaleTargetRef: apiVersion: apps/v1 kind: Deployment name: mi-deployment minReplicas: 1 maxReplicas: 5 metrics:
+
+type: Resource resource: name: cpu target: type: Utilization averageUtilization: 80
+¿Cómo funciona el vertical pod autoscaler?
+
+El escalamiento vertical permite adaptar un único pod para que disponga de más recursos (CPU, RAM), sin replicar múltiples instancias. Esta opción es beneficiosa cuando se necesitan recursos adicionales en un solo pod para procesar tareas más intensivas sin caer en problemas de rendimiento.
+
+Proceso: el pod original es eliminado y reemplazado por uno más potente, lo que aumenta la capacidad para manejar el mismo proceso significativamente.
+Ventajas: menor impacto en la aplicación cliente, ya que no hay que gestionar múltiples pods, sino adaptar uno solo a las nuevas necesidades de carga.
+¿Qué ventajas trae el cluster autoscaler?
+
+El escalamiento del clúster complementa la capacidad de una instalación de Kubernetes para adaptarse tanto a condiciones internas como externas. Al escalar la infraestructura misma, un clúster puede disponer de más nodos tanto maestros como trabajadores cuando se incrementa el tráfico o las demandas de carga de trabajo.
+
+Infraestructura flexible: puede agregar más nodos a medida que la demanda crece, lo que elimina cuellos de botella en el clúster.
+Adaptabilidad: ideal para entornos en la nube, como AWS, GCP y Azure, donde la escalabilidad y los costes pueden equilibrarse de acuerdo a las operaciones requeridas en tiempo real.
+¿Cómo configuro métricas para escalamiento?
+
+Nos encontramos con una necesidad esencial: contar con métricas para que los autoscalers (HPA, VPA) tomen decisiones informadas. Kubernetes requiere del metric-server para monitorizar y ofrecer datos actualizados sobre uso de CPU y memoria.
+
+Configurar metric-server:
+
+minikube addons enable metrics-server
+
+Ventajas de uso: permite establecer un consumo realista de recursos y ajustar los umbrales con precisión, optimizando la eficiencia del clúster.
+
+Estos tres métodos de escalamiento permiten a developers crear aplicaciones tanto resilientes como eficientes, maximizando su desempeño a medida que se ajustan a demandas cambiantes. Al dominar estas herramientas, emprenderás un camino hacia el dominio de Kubernetes y optimizarás tus despliegues de producción. ¡No esperes más para ponerlas en práctica!
+
+## En la capa de Infraestructura AWS o GCP
+
+Tenemos el Cluster Autoscaler
+
+Tenemos un nodo maestro que recibe todas las peticiones.
+
+Si llega a necesitar escalar el cluster autoscaler , es capaz de escalar los nodos maestros y los nodos worker. Permitiendo que los cluster tengan una alta disponibilidad y puedan escalar automaticamente.
+
+## Addons
+
+En entornos produccitivos el uso de addons de minikube no es facil ni plug and play, ya que requiere su instalacion manual en el servidor.
+
+
+# Clase 17 
