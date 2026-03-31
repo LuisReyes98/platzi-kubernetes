@@ -1728,4 +1728,102 @@ Si llega a necesitar escalar el cluster autoscaler , es capaz de escalar los nod
 En entornos produccitivos el uso de addons de minikube no es facil ni plug and play, ya que requiere su instalacion manual en el servidor.
 
 
-# Clase 17 
+# Clase 17 Configuración de Kubernetes en GKE (Google)
+
+Los servicios de Kubernetes en la nube representan una evolución significativa en la gestión de contenedores, ofreciendo capacidades avanzadas que facilitan el despliegue y la administración de aplicaciones. Cada proveedor de servicios cloud tiene sus particularidades, ventajas y características únicas que pueden influir en nuestra decisión al momento de elegir una plataforma. En este contenido, exploraremos cómo configurar Google Kubernetes Engine (GKE), uno de los proveedores más actualizados en el ecosistema Kubernetes.
+
+## ¿Qué es Google Kubernetes Engine y por qué utilizarlo?
+
+Google Kubernetes Engine es un servicio gestionado de Kubernetes que permite desplegar y administrar aplicaciones contenerizadas a escala en la infraestructura de Google Cloud Platform (GCP). Una de las principales ventajas de GKE es que siempre tiene disponible las últimas versiones de Kubernetes, lo cual no es sorprendente considerando que Kubernetes fue originalmente una iniciativa de Google.
+
+## Además, GKE ofrece:
+
+Soporte para características avanzadas de Kubernetes
+Actualizaciones automáticas del clúster
+Integración con otros servicios de Google Cloud
+Múltiples opciones de almacenamiento y networking
+Para comenzar a trabajar con GKE, necesitamos tener una cuenta de GCP configurada previamente. Si eres usuario nuevo, es probable que recibas créditos gratuitos como parte del periodo de prueba que ofrece Google Cloud.
+
+## ¿Cómo configurar nuestro primer clúster en GKE?
+
+Antes de crear nuestro clúster de Kubernetes en GKE, necesitamos asegurarnos de tener instalado el SDK de Google Cloud y habilitar las APIs necesarias. Los pasos principales son:
+
+### Configuración del entorno
+
+Instalar Google Cloud SDK (si no lo tienes ya instalado)
+
+Autenticarte con tu cuenta de Google:
+
+```sh
+gcloud auth login
+```
+
+Este comando abrirá una ventana en tu navegador para que selecciones tu cuenta de Google y otorgues los permisos necesarios.
+
+### Habilitar las APIs requeridas:
+
+```sh
+gcloud services enable container.googleapis.com
+gcloud services enable compute.googleapis.com
+```
+
+Estos comandos activan el API de contenedores y el API de cómputo respectivamente, los cuales son necesarios para trabajar con GKE.
+
+### Creación del clúster
+
+Una vez configurado nuestro entorno, podemos crear nuestro primer clúster de Kubernetes con el siguiente comando:
+
+
+gcloud container clusters create k8s-course-demo --num-nodes=2
+Este comando creará un clúster llamado "k8s-course-demo" con 2 nodos. El proceso de creación puede tomar entre 15 y 20 minutos, durante los cuales Google Cloud aprovisionará los recursos necesarios, configurará la red, y desplegará los componentes de Kubernetes.
+
+Durante la creación, podemos monitorear el progreso desde la consola de Google Cloud, en la sección de Kubernetes Engine, donde veremos información como:
+
+Estado del clúster
+Configuración general
+Versión de Kubernetes instalada
+Endpoints públicos y privados
+Nodos y pools de nodos
+Clases de almacenamiento disponibles
+Configuración de kubectl para acceso al clúster
+
+Después de crear el clúster, necesitamos configurar kubectl para poder interactuar con él. GKE requiere un plugin adicional para la autenticación:
+
+
+gcloud components install gke-gcloud-auth-plugin
+Este plugin es necesario para que kubectl pueda comunicarse con nuestro clúster en la nube.
+
+Una vez instalado el plugin, podemos verificar que tenemos acceso al clúster:
+
+
+kubectl config get-contexts
+Este comando mostrará todos los contextos disponibles, con un asterisco señalando el contexto activo, que debería ser nuestro clúster de GKE recién creado.
+
+¿Qué componentes instalados podemos encontrar en nuestro clúster de GKE?
+
+Una de las ventajas de usar un servicio gestionado como GKE es que muchos componentes esenciales vienen preinstalados y configurados. Para ver estos componentes, podemos ejecutar:
+
+```sh
+kubectl get pods -n kube-system
+```
+Entre los componentes instalados por defecto encontraremos:
+
+FluentBit: para la recolección y procesamiento de logs
+Métricas de Google Kubernetes Engine
+Container Storage Interface (CSI): para gestionar almacenamiento
+Metric Server: para la obtención de métricas de recursos
+kube-proxy: componente esencial de la arquitectura de Kubernetes
+CoreDNS: para la resolución DNS dentro del clúster
+Otros componentes de sistema
+Con nuestro clúster funcionando, podemos comenzar a crear namespaces y desplegar aplicaciones:
+
+
+kubectl create namespace platzi
+kubectl get namespaces
+Estos comandos crean y luego listan los namespaces disponibles, incluyendo el que acabamos de crear.
+
+Es importante recordar que si estamos utilizando el clúster solo para pruebas, debemos eliminarlo cuando hayamos terminado para evitar costos innecesarios.
+
+El ecosistema de Kubernetes en la nube ofrece múltiples opciones, cada una con sus características específicas. GKE se destaca por su actualización constante y soporte para las últimas funcionalidades de Kubernetes, lo que lo convierte en una excelente opción para proyectos que requieran las características más recientes.
+
+¿Has probado otros servicios gestionados de Kubernetes? ¿Qué factores consideras importantes al elegir un proveedor cloud para tus aplicaciones contenerizadas? Comparte tu experiencia en los comentarios.

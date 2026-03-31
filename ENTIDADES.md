@@ -8,8 +8,8 @@
 - configmaps: `kubectl get configmaps`
 - secrets
 - volumes
-- persistentvolumes
-- persistentvolumeclaims
+- persistentvolumes `pv`
+- persistentvolumeclaims `pvc`
 - statefulsets
 - daemonsets
 - replicasets
