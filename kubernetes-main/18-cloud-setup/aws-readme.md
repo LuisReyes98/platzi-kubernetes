@@ -8,6 +8,12 @@
     https://eksctl.io/
 
 
+## Identificar el ID de la cuenta de AWS
+
+```sh
+aws sts get-caller-identity
+```
+
 ## Create cluster
 
 Crear el cluster de forma imperativa
@@ -34,6 +40,12 @@ kubectl config get-contexts
 kubectl config use-context <context-name>
 ```
 
+Ver los nodes del cluster
+
+```sh
+k get nodes
+```
+
 ## Crear un pod de prueba
 
 ```
@@ -57,6 +69,12 @@ kubectl port-forward pod/hello-cloud 8080:8080
 
 ```
 kubectl expose pod hello-cloud --type=LoadBalancer --port=8080 --target-port=8080 --name=hello-cloud
+```
+
+Para listar los servicios y obtener la IP del LoadBalancer:
+
+```sh
+kubectl get services
 ```
 
 ### Delete cluster

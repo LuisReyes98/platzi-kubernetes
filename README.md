@@ -1827,3 +1827,229 @@ Es importante recordar que si estamos utilizando el clúster solo para pruebas, 
 El ecosistema de Kubernetes en la nube ofrece múltiples opciones, cada una con sus características específicas. GKE se destaca por su actualización constante y soporte para las últimas funcionalidades de Kubernetes, lo que lo convierte en una excelente opción para proyectos que requieran las características más recientes.
 
 ¿Has probado otros servicios gestionados de Kubernetes? ¿Qué factores consideras importantes al elegir un proveedor cloud para tus aplicaciones contenerizadas? Comparte tu experiencia en los comentarios.
+
+# Clase 18 Configuración de Kubernetes en AKS (Azure)
+
+
+![alt text](image-19.png)
+
+## Resumen
+
+El despliegue de aplicaciones en la nube se ha vuelto una habilidad indispensable en el ecosistema DevOps actual. Dominar plataformas como Azure Kubernetes Service (AKS) no solo permite optimizar tus flujos de trabajo, sino que también te posiciona competitivamente en el mercado laboral. Exploraremos paso a paso cómo crear y configurar un clúster de Kubernetes en Azure, una de las soluciones más demandadas por empresas que buscan profesionales en infraestructura cloud.
+
+## ¿Por qué es importante AKS en el ecosistema de DevOps?
+
+Azure Kubernetes Service es una solución administrada de Kubernetes que simplifica significativamente el despliegue y gestión de aplicaciones contenerizadas. Una de las ventajas más destacables de AKS es su integración nativa con Azure DevOps, permitiendo automatizar completamente el flujo desde desarrollo hasta producción.
+
+Las organizaciones buscan cada vez más profesionales que dominen estas tecnologías porque:
+
+Facilitan la implementación de prácticas de integración continua
+Permiten administrar infraestructura como código
+Ofrecen escalabilidad y alta disponibilidad de forma nativa
+Simplifican la gestión de microservicios
+Al igual que GCP y AWS, Azure ofrece su propio servicio de Kubernetes, pero con particularidades que lo hacen único en el mercado.
+
+## ¿Cómo crear un clúster de Kubernetes en Azure?
+
+### Requisitos previos
+
+Antes de comenzar con la creación del clúster, necesitamos:
+
+Una cuenta de Azure configurada
+Azure CLI instalado en nuestra máquina local
+Kubectl instalado como complemento
+Para verificar que tengamos la CLI de Azure correctamente instalada, ejecutamos:
+
+
+```sh
+az --version
+```
+
+Si es necesario instalar el complemento de kubectl para Azure, utilizamos:
+
+```sh
+az aks install-cli
+```
+Inicio de sesión y configuración inicial
+
+El primer paso es autenticar nuestra CLI local con Azure:
+
+```sh
+az login
+```
+
+Este comando abrirá una ventana del navegador donde debemos iniciar sesión con nuestra cuenta de Azure. Una vez autenticados, debemos seleccionar la suscripción con la que queremos trabajar.
+
+Es importante recordar que necesitamos una suscripción activa con método de pago configurado, aunque Azure ofrece una capa gratuita para usuarios nuevos.
+
+### Creación del grupo de recursos
+
+En Azure, todos los recursos deben estar asociados a un grupo de recursos, que sirve como contenedor lógico. Para crear uno:
+
+```sh
+az group create --name K8sCourseAksDemo --location eastus
+```
+
+## Este grupo nos permitirá administrar de forma centralizada:
+
+La facturación de nuestros servicios
+Las políticas de seguridad
+El monitoreo de recursos
+Las configuraciones compartidas
+Creación del clúster de Kubernetes
+
+Ahora podemos crear nuestro clúster de AKS utilizando el grupo de recursos:
+
+```sh
+az aks create --resource-group K8sCourseAksDemo --name K8sCourseAksDemo \
+              --node-count 3 --enable-addons monitoring --generate-ssh-keys \
+              --node-vm-size Standard_DS2_v3
+```
+
+Los parámetros clave que debemos entender son:
+
+`--node-count`: especifica cuántos nodos (máquinas virtuales) tendrá nuestro clúster
+`--enable-addons monitoring`: activa el monitoreo del clúster
+`--generate-ssh-keys`: crea claves SSH para conectarse a los nodos
+`--node-vm-size`: define el tipo de máquina virtual a usar
+Durante este proceso, podemos enfrentar algunos errores comunes:
+
+## Proveedores de servicios no registrados
+Tamaños de VM no disponibles en la región seleccionada
+Para el primer caso, necesitamos registrar los proveedores necesarios:
+
+```sh
+az provider register --namespace Microsoft.OperationsManagement
+az provider register --namespace Microsoft.ContainerService
+```
+
+Para el segundo caso, debemos especificar un tamaño de VM compatible con nuestra suscripción y región.
+
+### ¿Cómo conectar kubectl local con nuestro clúster de AKS?
+
+Una vez que el clúster está creado (proceso que puede tomar entre 15-20 minutos), necesitamos configurar kubectl para comunicarse con él:
+
+
+```sh
+az aks get-credentials --resource-group K8sCourseAksDemo --name K8sCourseAksDemo
+```
+
+Este comando agrega automáticamente la configuración necesaria a nuestro archivo kubeconfig. Para verificar que tenemos acceso al clúster:
+
+```sh
+kubectl get nodes
+```
+
+Deberíamos ver tres nodos en estado "Ready". También podemos explorar los componentes del sistema:
+
+```sh
+kubectl get pods -n kube-system
+```
+
+Esto mostrará componentes esenciales como:
+
+CoreDNS para resolución DNS interna
+Azure CNI para networking
+Métricas y monitoreo
+Componentes de almacenamiento (CSI)
+Creación de recursos en nuestro clúster
+
+Ya con la conexión establecida, podemos crear recursos como namespaces:
+
+```sh
+kubectl create namespace platzi-aks
+```
+
+Y desde aquí podríamos comenzar a desplegar nuestras aplicaciones, siguiendo los mismos principios que hemos aplicado localmente.
+
+Es interesante notar que, a diferencia de las instalaciones locales, en AKS el plano de control (control plane) es administrado directamente por Azure a través del Cloud Controller Manager, lo que nos libera de esa responsabilidad.
+
+La exploración de Kubernetes en diferentes proveedores de nube nos permite entender mejor las particularidades de cada uno, preparándonos para tomar decisiones informadas según los requisitos específicos de nuestros proyectos. El conocimiento de estas plataformas se ha vuelto indispensable para cualquier profesional DevOps en el mercado actual.
+
+¿Has trabajado con otros proveedores cloud? ¿Qué ventajas o desventajas has encontrado en AKS comparado con ellos? Comparte tu experiencia en los comentarios.
+
+# Clase 19 Configuración de Kubernetes en EKS (AWS)
+
+## Resumen
+
+## ¿Cómo gestionar un clúster de Kubernetes en la nube usando EKSCTL?
+
+¿Te has preguntado cómo llevar tu clúster de Kubernetes de local a la nube? Hoy vamos a descubrir cómo hacerlo con EKSCTL y AWS. Este proceso transforma tu entorno de pruebas en una orquesta lista para producción. A continuación, exploraremos cómo gestionar nuestros recursos en la nube de AWS.
+
+## ¿Qué es EKSCTL y cómo se instala?
+
+EKSCTL es un comando que te permite gestionar clústeres de Kubernetes directamente desde tu máquina local, utilizando la infraestructura de AWS. Aquí hay algunos pasos esenciales para comenzar:
+
+Requerimientos previos: antes de instalar EKSCTL, necesitas familiarizarte con servicios de AWS como IAM, VPC y EC2.
+
+Instalación: accede a la documentación oficial de EKSCTL buscando "EKSCTL install" en tu navegador. Verás instrucciones para diferentes sistemas operativos. En Mac OS, por ejemplo, se instala a través de Homebrew con los comandos:
+
+
+brew tap weaveworks/tap
+brew install weaveworks/tap/eksctl
+Configuración inicial: una vez instalado, asegúrate de tener tus credenciales de AWS configuradas para validar tu identidad con el siguiente comando:
+
+```
+aws sts get-caller-identity
+```
+
+¿Cómo crear un clúster de Kubernetes en AWS?
+
+La creación de un clúster es un proceso clave donde EKSCTL brilla por su simplicidad. A través de un archivo YAML de configuración, puedes definir aspectos esenciales del clúster, como el tipo de nodos y su cantidad. Aquí está como hacerlo:
+
+Archivo de configuración: utiliza un archivo YAML que define tu clúster, por ejemplo, simple-cluster.yaml:
+
+```
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: test-cluster
+  region: us-west-2
+nodeGroups:
+  - name: worker-nodes
+    instanceType: t3.medium
+    desiredCapacity: 2
+```
+Creación del clúster: ejecuta el siguiente comando para crear el clúster con tu archivo de configuración:
+
+
+eksctl create cluster -f simple-cluster.yaml
+Este proceso puede durar entre 5 a 10 minutos, dependiendo de tu conexión a Internet y los recursos de AWS.
+
+¿Cómo validar el clúster y administrar los recursos?
+
+Una vez creado el clúster, es esencial confirmarlo y empezar a gestionar nuestros recursos:
+
+Validación: una vez finalice la creación, usa el comando kubectl para listar los nodos:
+
+
+kubectl get nodes
+Esto confirmará que tus nodos están activos y operativos en la nube.
+
+Exponer aplicaciones: puedes desplegar aplicaciones rápidamente y exponerlas a través de servicios de tipo LoadBalancer. Esto se hace mediante el comando:
+
+
+kubectl expose pod hello-cloud --type=LoadBalancer --name=my-service
+Utiliza el comando kubectl get services para obtener la URL del LoadBalancer.
+
+Cambio de contexto y administración de un ambiente de pruebas
+
+Gestionar entornos con diferentes clústeres puede ser complejo; aquí es donde kubectl config resulta útil:
+
+Cambio de contexto: para cambiar entre ambientes, verifica tus contextos disponibles y cámbialos con:
+
+
+```sh
+kubectl config get-contexts
+kubectl config use-context minikube
+```
+
+Esto es especialmente útil si deseas hacer pruebas localmente sin afectar el clúster en la nube.
+
+Eliminar clústeres: una vez finalices tus pruebas, elimina el clúster para evitar costos innecesarios con el comando:
+
+
+eksctl delete cluster --name=test-cluster
+Conclusión
+
+¡Y ahí lo tienes! EKSCTL no solo simplifica la gestión de clústeres de Kubernetes en AWS, sino que también integra prácticas de DevOps para llevar tus aplicaciones a un entorno productivo confiable. No olvides explorar cómo podrías aplicar estos conocimientos en otros proveedores de nube. Sigue aprendiendo y compartiendo tus experiencias, juntos continuamos creciendo en el mundo del desarrollo de software en la nube.

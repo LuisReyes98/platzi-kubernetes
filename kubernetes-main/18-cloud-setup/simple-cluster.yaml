@@ -13,7 +13,7 @@ managedNodeGroups:
     desiredCapacity: 2
 
 cloudWatch:
-    clusterLogging:
-        # enable specific types of cluster control plane logs
-        enableTypes: ["audit", "authenticator", "controllerManager"]
-        logRetentionInDays: 5
+  clusterLogging:
+    # enable specific types of cluster control plane logs
+    enableTypes: ["audit", "authenticator", "controllerManager"]
+    logRetentionInDays: 5
