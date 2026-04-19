@@ -1498,7 +1498,8 @@ Desarrollar aplicaciones con Kubernetes ofrece no solo conocimiento técnico esp
 
 # Clase 14 Jobs y CronJobs: Tareas únicas y programadas
 
-Resumen
+### Resumen
+
 Los jobs y cronjobs en Kubernetes representan una solución elegante para ejecutar tareas programadas o efímeras dentro de tu infraestructura cloud. Estas herramientas te permiten optimizar recursos, automatizar procesos críticos y gestionar de manera eficiente aquellas aplicaciones que no necesitan estar en ejecución constante, como ocurre con backups, migraciones de datos o limpieza de logs.
 
 ¿Qué diferencia a los jobs y cronjobs de otros objetos en Kubernetes?
@@ -1808,12 +1809,13 @@ kubectl get pods -n kube-system
 ```
 Entre los componentes instalados por defecto encontraremos:
 
-FluentBit: para la recolección y procesamiento de logs
-Métricas de Google Kubernetes Engine
-Container Storage Interface (CSI): para gestionar almacenamiento
-Metric Server: para la obtención de métricas de recursos
-kube-proxy: componente esencial de la arquitectura de Kubernetes
-CoreDNS: para la resolución DNS dentro del clúster
+
+**FluentBit**: para la recolección y procesamiento de logs
+**Métricas de Google Kubernetes Engine**
+**Container Storage Interface (CSI)**: para gestionar almacenamiento
+**Metric Server**: para la obtención de métricas de recursos
+**kube-proxy**: componente esencial de la arquitectura de Kubernetes
+**CoreDNS**: para la resolución DNS dentro del clúster
 Otros componentes de sistema
 Con nuestro clúster funcionando, podemos comenzar a crear namespaces y desplegar aplicaciones:
 
@@ -2048,8 +2050,112 @@ Esto es especialmente útil si deseas hacer pruebas localmente sin afectar el cl
 
 Eliminar clústeres: una vez finalices tus pruebas, elimina el clúster para evitar costos innecesarios con el comando:
 
-
+```sh
 eksctl delete cluster --name=test-cluster
-Conclusión
+```
+
+### Conclusión
 
 ¡Y ahí lo tienes! EKSCTL no solo simplifica la gestión de clústeres de Kubernetes en AWS, sino que también integra prácticas de DevOps para llevar tus aplicaciones a un entorno productivo confiable. No olvides explorar cómo podrías aplicar estos conocimientos en otros proveedores de nube. Sigue aprendiendo y compartiendo tus experiencias, juntos continuamos creciendo en el mundo del desarrollo de software en la nube.
+
+## Clase 20 Despliegue del Proyecto en la nube de AWS (EKS)
+
+Resumen
+¿Cómo podemos desplegar una aplicación en un clúster de Kubernetes en la nube?
+
+Desplegar una aplicación en un clúster de Kubernetes (K8s) en la nube es un proceso que requerirá varios pasos para asegurar que todos los componentes estén alineados y en operación. A continuación, exploramos el proceso, las configuraciones necesarias y buenas prácticas para lograr una implementación exitosa.
+
+¿Qué prerrequisitos son esenciales?
+
+Para comenzar, asegúrate de cumplir con ciertos prerrequisitos básicos necesarios para el despliegue:
+
+Clúster EKS en AWS: debes haber creado previamente un clúster de Elastic Kubernetes Service dentro de tu cuenta de AWS.
+Base de datos RDS: debes contar con una instancia de base de datos Amazon RDS configurada para que los pods puedan interactuar con esta base de datos.
+Registries de Docker: tener configurados los registries de Docker necesarios para tus aplicaciones backend y frontend.
+Con estos elementos en marcha, estarás listo para proceder al despliegue.
+
+¿Cómo organizamos los recursos en namespaces?
+
+Una práctica común en Kubernetes es segmentar recursos en namespaces, los cuales permiten un orden lógico y organizacional:
+
+Namespace para backend: alojando todos los componentes relacionados con la parte del servidor.
+Namespace para frontend: que incluye todos los componentes de la interfaz de usuario.
+Namespace para storage: para gestionar la capa de persistencia, como el almacenamiento y bases de datos. Aquí se puede crear un servicio de tipo ExternalName que conecta con la base de datos RDS.
+Crear namespaces específicos no solo organiza tus recursos, sino que también ayuda en la configuración de accesos y políticas.
+
+
+kubectl create namespace backend
+kubectl create namespace frontend
+kubectl create namespace storage
+¿Cómo configuramos la conexión con servicios externos?
+
+Para conectar con una base de datos RDS, puedes usar un servicio ExternalName que apuntará a la base de datos:
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: storage
+spec:
+  type: ExternalName
+  externalName: tu-endpoint-rds.amazonaws.com
+¿Cómo gestionamos información sensible en Kubernetes?
+
+La gestión de datos sensibles en Kubernetes debe manejarse con sumo cuidado. Usar secretos para valores como contraseñas es una buena práctica:
+
+
+kubectl create secret generic mysql-secret \
+  --from-literal=username=admin \
+  --from-literal=password=k8s \
+  --from-literal=host=tu-endpoint-rds.amazonaws.com \
+  -n backend
+Para asegurar la confidencialidad, Kubernetes cifra los secretos en almacenamiento, haciéndolos seguros y protegidos.
+
+¿Cómo inicializamos nuestra base de datos?
+
+Inicializar la base de datos puede involucrar la creación de tablas y otros procesos iniciales, definidos a través de scripts. Estos scripts se ejecutan mediante un Job de Kubernetes.
+
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+  namespace: backend
+spec:
+  template:
+    spec:
+      containers:
+        - name: db-init
+          image: image-usada-para-initializar
+          volumeMounts:
+            - name: config-volume
+              mountPath: /init-scripts
+          envFrom:
+            - secretRef:
+                name: mysql-secret
+      volumes:
+        - name: config-volume
+          configMap:
+            name: db-scripts
+      restartPolicy: OnFailure
+¿Cómo compilar imágenes para diferentes arquitecturas?
+
+Cuando se trabaja con Docker para diferentes arquitecturas, como en máquinas ARM y clústeres AMD, Buildx se vuelve esencial para la compilación multi-plataforma:
+
+
+docker buildx build --platform=linux/amd64 -t mi-registry/mi-app:tag .
+docker push mi-registry/mi-app:tag
+¿Cómo configuramos y desplegamos nuestra aplicación?
+
+Después de compilar, es crucial validar las configuraciones de tu archivo de despliegue:
+
+Validar Deployment YAML: comprueba que la referencia a las imágenes y configuraciones son correctas.
+
+Health Checks: utiliza readiness y liveliness probes para asegurar que el servicio esté disponible y funcionando como se espera.
+
+External Access: configura servicios tipo LoadBalancer para facilitar el acceso exterior a la aplicación.
+
+apiVersion: apps/v1 kind: Deployment metadata: name: mi-app namespace: backend spec: replicas: 1 selector: matchLabels: app: mi-app template: metadata: labels: app: mi-app spec: containers: - name: mi-app image: mi-registry/mi-app:tag ports: - containerPort: 5001 envFrom: - secretRef: name: mysql-secret
+
+Al asegurar cada uno de estos pasos, podrás desplegar aplicaciones robustas y flexibles en Kubernetes, apoyando a cualquier negocio a alcanzar la escala y eficiencia deseadas. Sigue explorando y adaptando nuevas prácticas para continuar mejorando.
