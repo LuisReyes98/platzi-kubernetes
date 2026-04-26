@@ -2375,3 +2375,33 @@ Workshops de AWS EKS: Workshops específicos para Amazon Elastic Kubernetes Serv
 Estos recursos ofrecen oportunidades de práctica y profundización que son clave para quienes aspiran a una comprensión avanzada de Kubernetes.
 
 Como siempre, te animamos a seguir explorando y encontrando más recursos que complementen tu conocimiento. El aprendizaje continuo es vital en el mundo dinámico de la tecnología. ¿Tienes algún otro recurso valioso que desees compartir con la comunidad? ¡La colaboración nos fortalece a todos!
+
+# Clase 24 Despliegue en Kubernetes Finalizado
+
+Resumen
+¿Qué conceptos fundamentales de Kubernetes se abordaron en el curso?
+
+Este curso proporcionó una comprensión integral de Kubernetes, también conocido como K8S, enfocándose en conceptos teóricos y prácticos esenciales. Exploramos los elementos clave de Kubernetes, como los maestros y workers, y discutimos cómo desempeñan sus funciones críticas. Además, aprendimos sobre una variedad de objetos, incluidos pods, deployments, réplicas, sets y volúmenes, que son fundamentales para gestionar aplicaciones en entornos Kubernetes. Estos componentes nos permiten no solo orquestar y escalar aplicaciones, sino también garantizar su conectividad con el mundo real.
+
+¿Cómo implementamos aplicaciones en la nube?
+
+Uno de los aspectos más emocionantes de este curso fue la implementación de aplicaciones reales en la nube utilizando Kubernetes. Aprendimos a desplegar un front end y un back end, lo cual nos proporcionó una visión clara de cómo funcionaría una aplicación en un entorno productivo. Este proceso incluyó el uso de herramientas como el Horizontal Pod Autoscaler, que nos permitió escalar aplicaciones de manera eficiente y garantizar su disponibilidad ante demandas variables.
+
+¿Qué es Horizontal Pod Autoscaler?
+
+El Horizontal Pod Autoscaler (HPA) es una característica sofisticada de Kubernetes que ajusta automáticamente el número de pods en una replicación, en función de la carga actual. HPA es una herramienta poderosa para optimizar recursos y mantener el rendimiento de las aplicaciones.
+
+¿Qué importancia tienen las certificaciones en Kubernetes?
+
+Durante el curso también hablamos de las certificaciones en Kubernetes, que son fundamentales para consolidar tus conocimientos y experiencia en la plataforma. Obtener estas certificaciones no solo válida tu competencia técnica, sino que también te posiciona de manera más destacada en el mercado laboral actual, ya que demuestra tu capacidad para manejar sistemas Kubernetes de manera eficaz y segura.
+
+¿Qué certificaciones existen para Kubernetes?
+
+Algunas certificaciones destacadas incluyen:
+
+Certified Kubernetes Administrator (CKA): diseñada para quienes deseen demostrar su habilidad en la gestión de clusters Kubernetes.
+Certified Kubernetes Application Developer (CKAD): ideal para desarrolladores que desean mostrar competencias en la creación, configuración y exposición de aplicaciones nativas de la nube.
+Certified Kubernetes Security Specialist (CKS): para profesionales enfocados en la seguridad de entornos Kubernetes.
+En cada una de estas certificaciones, se evalúan competencias específicas que aportan un valor incalculable a cualquier profesional de TI que utilice Kubernetes.
+
+Con este conocimiento y práctica, tu dominio sobre Kubernetes ha dado un salto significativo. Con el compromiso y las habilidades adquiridas, estás completamente preparado para enfrentar y superar nuevos desafíos en el fascinante mundo de la orquestación de contenedores
