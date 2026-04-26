@@ -2331,3 +2331,47 @@ Monitorear los logs del pod para ver la cadena de pensamiento del modelo
 Comprender cómo implementar modelos LLM en Kubernetes abre un abanico de posibilidades para proyectos personales o empresariales, permitiendo desplegar y escalar modelos de inteligencia artificial con relativa facilidad, aprovechando toda la potencia de la orquestación de contenedores.
 
 ¿Habías explorado antes esta forma de ejecutar modelos LLM? El potencial para crear soluciones personalizadas es enorme, desde chatbots corporativos hasta sistemas de análisis de datos automatizados. Nos encantaría conocer qué aplicaciones te gustaría implementar con esta infraestructura.
+
+# 23 Certificaciones profesionales en K8s, recursos para certificarse
+
+https://training.linuxfoundation.org/training/kcna-cka-exam-bundle/
+
+https://www.cncf.io/training/
+
+https://github.com/kelseyhightower/kubernetes-the-hard-way
+
+https://eksworkshop.com/docs/security/
+
+https://killercoda.com/
+
+
+## Resumen
+¿Cuáles son los recursos esenciales para certificarse en Kubernetes?
+
+Para aquellos interesados en profundizar su conocimiento y obtener certificaciones en Kubernetes, es esencial contar con los recursos adecuados. Kubernetes se ha convertido en una herramienta fundamental para la gestión de clústers y aplicaciones en entornos locales y en la nube. A medida que avanzamos en este viaje educativo, aprenderás cómo prepararte para las certificaciones, dónde puedes tomarlas y recomendaciones para tu formación continua.
+
+¿Qué documentaciones ofrece la Cloud Native Computing Foundation?
+
+La Cloud Native Computing Foundation (CNCF) proporciona una amplia variedad de recursos educativos y certificaciones que varían desde lo más básico hasta lo más avanzado. Entre ellas se encuentran:
+
+Kubernetes Certified Administrator (KCA): válida, conocimientos en administración de clústers.
+Kubernetes Certified Security Specialist (CKS): enfocada en la seguridad dentro de clústers Kubernetes.
+Kubernetes Certified Application Developer (CKAD): para desarrolladores que crean, configuran y gestionan aplicaciones en Kubernetes.
+Estas certificaciones no solo validan tus conocimientos, sino que también te brindan una ruta clara para avanzar hacia una especialización más profunda en administración y seguridad de Kubernetes.
+
+¿Dónde puedo tomar las certificaciones de Kubernetes?
+
+La Linux Foundation ofrece exámenes oficiales para certificar tus habilidades en Kubernetes. Esto es lo que necesitas saber:
+
+Bundles Disponibles: diversos paquetes permiten tomar uno o varios exámenes, ajustándose a tus necesidades educativas.
+Costo Aproximado: los precios oscilan entre $250 y $350 por examen.
+Valor en el Mercado: estas certificaciones son altamente valoradas y reconocidas en la industria, brindándote una ventaja competitiva en el mercado laboral.
+¿Qué otros recursos pueden ayudar en el aprendizaje de Kubernetes?
+
+Existen recursos adicionales que complementan tu formación en Kubernetes. Algunos destacados son:
+
+Kubernetes the Hard Way: creado por Kelsey Hightower, este recurso desglosa la implementación manual de Kubernetes, proporcionando una comprensión profunda de su arquitectura desde cero.
+Workshops de AWS EKS: Workshops específicos para Amazon Elastic Kubernetes Service (EKS) permiten practicar conceptos fundamentales con laboratorios en tu cuenta de AWS.
+Estos recursos ofrecen oportunidades de práctica y profundización que son clave para quienes aspiran a una comprensión avanzada de Kubernetes.
+
+Como siempre, te animamos a seguir explorando y encontrando más recursos que complementen tu conocimiento. El aprendizaje continuo es vital en el mundo dinámico de la tecnología. ¿Tienes algún otro recurso valioso que desees compartir con la comunidad? ¡La colaboración nos fortalece a todos!
