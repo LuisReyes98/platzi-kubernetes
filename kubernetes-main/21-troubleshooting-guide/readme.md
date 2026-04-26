@@ -2,7 +2,7 @@
 
 ## Comandos usados para solucionar problemas
 
-```
+```sh
 kubectl get pods
 kubectl get pods -o wide
 kubectl get nodes
@@ -56,3 +56,44 @@ apk add mysql-client -y
 ```
 mysql -u $DB_USER -h $DB_HOST -D $DB_NAME -p
 ```
+
+
+## Mis notas
+
+```sh
+kubectl get pods -n backend
+# Describir un pod de  un namespace específico
+kubectl describe pod <pod-name> -n backend
+
+# apply -f con un namespace específico
+kubectl apply  -n backend -f <file.yaml>
+
+# obtener eventos de un pod específico
+kubectl events -n backend --field-selector involvedObject.name=<pod-name>
+
+# ver logs de un pod específico
+kubectl logs <pod-name> -n backend
+
+# Entrar en consola dentro de un pod
+kubectl  -n backend exec -it <pod-name> -- bash
+kubectl  -n backend exec -it <pod-name> -- sh
+
+# Ver variables de entorno en consola
+env
+env | grep DB_
+
+# Connect to mysql
+mysql -u $DB_USER -h $DB_HOST -D $DB_NAME -p
+```
+
+
+Se debuguea el error de un pod con el comando `kubectl describe pod <pod-name>` y se lee la seccion de eventos para entender el error.
+
+
+### Tipos de errores y su significado
+
+- ImagePullBackOff: No se puede descargar la imagen del contenedor.
+- CrashLoopBackOff: El contenedor se está reiniciando continuamente debido a un error en la aplicación.
+- CreateContainerConfigError: Error al crear la configuración del contenedor, generalmente debido a variables de entorno o secretos mal configurados.
+
+- OOMKilled: Out Of Memory Killed, el contenedor ha sido terminado por consumir demasiada memoria. y no tener recursos suficientes asignados.

@@ -2058,7 +2058,7 @@ eksctl delete cluster --name=test-cluster
 
 ¡Y ahí lo tienes! EKSCTL no solo simplifica la gestión de clústeres de Kubernetes en AWS, sino que también integra prácticas de DevOps para llevar tus aplicaciones a un entorno productivo confiable. No olvides explorar cómo podrías aplicar estos conocimientos en otros proveedores de nube. Sigue aprendiendo y compartiendo tus experiencias, juntos continuamos creciendo en el mundo del desarrollo de software en la nube.
 
-## Clase 20 Despliegue del Proyecto en la nube de AWS (EKS)
+# Clase 20 Despliegue del Proyecto en la nube de AWS (EKS)
 
 Resumen
 ¿Cómo podemos desplegar una aplicación en un clúster de Kubernetes en la nube?
@@ -2159,3 +2159,175 @@ External Access: configura servicios tipo LoadBalancer para facilitar el acceso 
 apiVersion: apps/v1 kind: Deployment metadata: name: mi-app namespace: backend spec: replicas: 1 selector: matchLabels: app: mi-app template: metadata: labels: app: mi-app spec: containers: - name: mi-app image: mi-registry/mi-app:tag ports: - containerPort: 5001 envFrom: - secretRef: name: mysql-secret
 
 Al asegurar cada uno de estos pasos, podrás desplegar aplicaciones robustas y flexibles en Kubernetes, apoyando a cualquier negocio a alcanzar la escala y eficiencia deseadas. Sigue explorando y adaptando nuevas prácticas para continuar mejorando.
+
+# Clase 21 Troubleshooting en Kubernetes
+
+Resumen
+¿Cómo solucionar errores comunes en Kubernities?
+
+Trabajar con Kubernities en entornos productivos y de desarrollo puede resultar complicado debido a su compleja arquitectura. Sin embargo, utilizando herramientas de debugging y métricas, es posible solucionar de manera eficiente los problemas que puedan surgir al administrar clústers. A continuación, exploraremos cómo resolver algunos de los errores más comunes en Kubernities mediante una serie de ejercicios prácticos.
+
+¿Cómo identificar errores en pods?
+
+Para detectar los errores en pods, debemos utilizar comandos de kubectl adecuados. Por ejemplo, el comando kubectl describe pod proporciona información detallada sobre el estado del pod, incluyendo problemas relacionados con imágenes y secretos.
+
+
+"kubectl describe pod <nombre-del-pod> -n <nombre-del-namespace>"
+Errores de descarga de imagen: el error image pull backoff indica que la imagen no puede ser descargada, probablemente porque el tag es incorrecto. Verifique si la imagen y su versión están en el registro.
+
+Errores de configuración: si el pod no puede iniciar correctamente el contenedor, revise los secretos y configmaps asociados. Use el comando kubectl get secret para verificar los nombres de secretos en el namespace.
+
+¿Cómo solucionar problemas de memoria y CPU?
+
+Un error común en los clústers es el OM kills o errores de falta de memoria. Es fundamental asignar adecuadamente los recursos y dejar un margen para el escalamiento de los pods.
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "50m"
+  limits:
+    memory: "512Mi"
+    cpu: "100m"
+```
+Ajuste estas configuraciones para evitar reinicios constantes del contenedor debido a la falta de recursos.
+
+¿Cómo garantizar la conectividad con la base de datos?
+
+Para conectar un pod con una base de datos, asegúrese de que el security group de la instancia permita el tráfico desde el grupo de nodos del clúster. Modifique esta configuración en la consola de gestión de la base de datos.
+
+
+kubectl describe pod <nombre-del-pod> -n <nombre-del-namespace>
+Use kubectl exec para acceder a la terminal del contenedor y validar la conexión con el comando del cliente MySQL.
+
+Estrategias para depurar aplicaciones
+
+Logs y eventos: revise los logs del pod utilizando kubectl logs para obtener detalles de los eventos recientes:
+
+Automatización: emplee herramientas que automatizan la identificación de errores. Esto reduce esfuerzos manuales y aumenta la eficiencia operativa.
+
+Validación de servicios: compruebe la exposición de servicios mediante URLs y verifique respuestas esperadas o secciones vacías.
+
+"kubectl exec -it <nombre-del-pod> -n <nombre-del-namespace> -- /bin/sh"
+
+Ejecución exitosa tras correcciones
+
+Tras realizar los ajustes y comprobar logs, compruebe que la aplicación alcanza un estado de ejecución exitoso. Verifique nuevamente los pods y asegúrese de que los errores previos han sido corregidos.
+
+Este enfoque meticuloso para depurar problemas en el clúster de Kubernetes le proporcionará las herramientas y el conocimiento necesario para manejar entornos de producción de manera competente. Continúe aprendiendo y experimente con diversos casos para fortalecer sus habilidades y asegurar un despliegue exitoso en el futuro. ¡El mundo de Kubernetes es vasto y lleno de oportunidades para mejora continua!
+
+# Clase 22 Otros casos de uso de Kubernetes
+
+![alt text](image-20.png)
+
+
+```sh
+kubectl -n <namespace> get all
+```
+
+## Resumen
+La integración de modelos de lenguaje de gran tamaño (LLM) con Kubernetes representa una de las tendencias más importantes en el despliegue de inteligencia artificial moderna. Los modelos como ChatGPT y otros servicios populares a menudo operan sobre infraestructuras basadas en clústeres de Kubernetes, permitiendo una gestión eficiente de recursos computacionales intensivos y una escalabilidad sin precedentes.
+
+¿Cómo se ejecutan los modelos LLM en la arquitectura moderna de la nube?
+
+La arquitectura actual de Internet y la nube es extremadamente compleja, compuesta por múltiples capas interconectadas. En esta estructura encontramos:
+
+La capa de nube: Donde residen los principales proveedores cloud como AWS, GCP y Azure, donde podemos crear clústeres Kubernetes.
+La capa Edge: Servidores ubicados estratégicamente cerca de los usuarios finales, como AWS Lambda Edge, que reducen la latencia de las peticiones.
+La capa de dispositivos: Donde interactúan los usuarios finales a través de diferentes tecnologías.
+Esta arquitectura multicapa ofrece ventajas significativas:
+
+Reducción de latencia en las comunicaciones
+Mayor portabilidad de aplicaciones
+Gestión centralizada de recursos mediante herramientas como CubeCTL
+Impacto directo y mejorado en la experiencia del usuario final
+¿Qué casos de uso se benefician de los servidores Edge con Kubernetes?
+
+## Los servidores Edge, al estar más cercanos al usuario final, son particularmente útiles para:
+
+Vehículos autónomos: Requieren procesamiento en tiempo real con latencia mínima
+Dispositivos IoT: Como sistemas de monitoreo en granjas o medidores inteligentes
+Retail y comercio: En tiendas inteligentes como las de Amazon
+Para estos escenarios, existen herramientas especializadas como Cube Edge (versión liviana de Kubernetes) y K3S (compatible con Linux, incluso en dispositivos como Raspberry Pi).
+
+## ¿Cómo se optimizan los recursos para inteligencia artificial en Kubernetes?
+
+Para potenciar el uso de contenedores y Kubernetes en aplicaciones de IA y machine learning, contamos con herramientas especializadas:
+
+CubeFlow: Plataforma dedicada a flujos de trabajo de ML en Kubernetes
+Nvidia GP Operator: Para gestionar GPUs de forma eficiente
+Workflows de Argo: Para automatizar procesos complejos
+Estas soluciones proporcionan beneficios clave:
+
+Gestión eficiente de recursos: Especialmente GPUs, cruciales para modelos de IA
+Mayor escalabilidad: Permitiendo entrenar LLMs en tiempos óptimos
+Automatización mejorada: A través de interfaces unificadas como CubeCTL
+¿Qué casos de uso son posibles con estas herramientas?
+
+![alt text](image-21.png)
+
+![alt text](image-22.png)
+
+## Con esta infraestructura, podemos:
+
+Entrenar y desplegar modelos dentro del mismo ecosistema
+Generar inferencias en tiempo real
+Crear pipelines completos de machine learning con herramientas como Kubflow
+Desplegar aplicaciones directamente en la nube
+¿Cómo implementar un modelo LLM en un clúster Kubernetes?
+
+Vamos a recorrer el proceso de desplegar un modelo DeepSig directamente en MiniCube, usando los siguientes componentes:
+
+Deployment de servidor sin optimizar: Configuración básica para entornos sin hardware especializado
+Deployment de servidor optimizado: Configuración avanzada para entornos con GPUs
+Deployment de interfaz de usuario: Para interactuar con el modelo desplegado
+Implementando un servidor sin optimización
+
+El deployment no optimizado incluye:
+
+
+## Recursos principales
+- PersistentVolumeClaim: 3GB de espacio
+- Deployment:
+  - Imagen: ollama:latest
+  - Recursos: 
+    - CPU: 1-2 (request-limits)
+    - Memoria: 2-4GB (request-limits)
+  - Puerto expuesto para comunicación
+Aprovechando recursos GPU con configuración optimizada
+
+La principal diferencia en el deployment optimizado es la configuración para hardware especializado:
+
+
+## Configuraciones específicas para GPU
+- nodeAffinity:
+  - Requiere: 
+    - hardware-type: GPU
+    - gpu-type: NVIDIA-A100
+    - gpus-count: >2
+- tolerations:
+  - No programar en nodos sin GPU
+- resources:
+  - nvidia.com/gpu: 1-2 (request-limits)
+La combinación de affinity y tolerations garantiza que los pods que requieren GPU se ubiquen en los nodos donde estos recursos están disponibles, mientras que los pods sin estos requisitos son repelidos de dichos nodos.
+
+Desplegando la interfaz de usuario
+
+La interfaz se configura con:
+
+
+- Deployment:
+  - Imagen: ollama-webui
+  - Puerto: 8080
+  - Variable de entorno apuntando al API del modelo
+- Service e Ingress: Para acceso desde navegador
+Es necesario configurar el archivo /etc/hosts para agregar la entrada correspondiente al dominio configurado en el Ingress (en este caso running.deepsig.local).
+
+Con todos estos componentes desplegados, podemos:
+
+Realizar consultas directas al API mediante peticiones curl
+Acceder a la interfaz gráfica a través del Ingress
+Monitorear los logs del pod para ver la cadena de pensamiento del modelo
+Comprender cómo implementar modelos LLM en Kubernetes abre un abanico de posibilidades para proyectos personales o empresariales, permitiendo desplegar y escalar modelos de inteligencia artificial con relativa facilidad, aprovechando toda la potencia de la orquestación de contenedores.
+
+¿Habías explorado antes esta forma de ejecutar modelos LLM? El potencial para crear soluciones personalizadas es enorme, desde chatbots corporativos hasta sistemas de análisis de datos automatizados. Nos encantaría conocer qué aplicaciones te gustaría implementar con esta infraestructura.
